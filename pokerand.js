@@ -88,87 +88,36 @@ const randAttack = () => {
 bot.sendDocument(chatId, randLine);  
 });     
 }
-//Function Def - Player 1
+
+//Function Def - Player 11121
+
+const msgchat = (player,x) => {
+        if (x==5){
+        player.dano=1}
+    else if(x==7){
+        player.dano=0
+    }
+    else{
+       	player1.dano = x;
+    }
+   	player1.life = player1.life - player1.dano;
+   	if(player1.life <= 0) {
+     	    console.log(`${player1.name} FAINTED`);
+     	    bot.sendMessage(chatId, `${player1.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
+        }else{
+    	    bot.sendMessage(chatId,` ${dictDano[x]}\n${player1.name} has ${player1.life} HP!` ,{parse_mode: 'HTML'});
+   }
+	
+
+}
+
 const def1 = () => {
    IntRandDano(arrayDano[n]);
    let x = parseInt(arrayDano[n]);
    if (player1.life==undefined){
 	player1.life=10;
    }
-   switch (x) {
-	case 0:	//missed
-	player1.dano = x;
-  	player1.life = player1.life - player1.dano;
-      	bot.sendMessage(chatId,` ${dictDano[x]}\n${player1.name} has ${player1.life} HP!` ,{parse_mode: 'HTML'});
-   	break;
-	case 1:
-   	player1.dano = x;
-   	player1.life = player1.life - player1.dano;
-   	if(player1.life <= 0) {
-     	console.log(`${player1.name} FAINTED`);
-     	bot.sendMessage(chatId, `${player1.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
-   }else{
-    	  bot.sendMessage(chatId,` ${dictDano[x]}\n${player1.name} has ${player1.life} HP!` ,{parse_mode: 'HTML'});
-   }
-	break;
-	case 2:
-   	player1.dano = x;
-   	player1.life = player1.life - player1.dano;
-   	if(player1.life <= 0) {
-     	console.log(`${player1.name} FAINTED`);
-     	bot.sendMessage(chatId, `${player1.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
-   }else{
-    	  bot.sendMessage(chatId,` ${dictDano[x]}\n${player1.name} has ${player1.life} HP!` ,{parse_mode: 'HTML'});
-   }
-	break;
-	case 3:
-   	player1.dano = x;
-   	player1.life = player1.life - player1.dano;
-   	if(player1.life <= 0) {
-     	console.log(`${player1.name} FAINTED`);
-     	bot.sendMessage(chatId, `${player1.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
-   }else{
-    	  bot.sendMessage(chatId,` ${dictDano[x]}\n${player1.name} has ${player1.life} HP!` ,{parse_mode: 'HTML'});
-   }
-	break;
-        case 4:
-   	player1.dano = x;
-   	player1.life = player1.life - player1.dano;
-   	if(player1.life <= 0) {
-     	console.log(`${player1.name} FAINTED`);
-     	bot.sendMessage(chatId, `${player1.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
-   }else{
-    	  bot.sendMessage(chatId,` ${dictDano[x]}\n${player1.name} has ${player1.life} HP!` ,{parse_mode: 'HTML'});
-   }
-	break;
-        case 5: // Flinch
-   	player1.dano = 1;
-   	player1.life = player1.life - player1.dano;
-   	if(player1.life <= 0) {
-     	console.log(`${player1.name} FAINTED`);
-     	bot.sendMessage(chatId, `${player1.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
-   }else{
-    	  bot.sendMessage(chatId,` ${dictDano[x]}\n${player1.name} has ${player1.life} HP!` ,{parse_mode: 'HTML'});
-   }
-	break;
-	case 6:
-	player1.dano = x;
-   	player1.life = player1.life - player1.dano;
-   	if(player1.life <= 0) {
-     	console.log(`${player1.name} FAINTED`);
-     	bot.sendMessage(chatId, `${player1.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
-   }else{
-    	  bot.sendMessage(chatId,` ${dictDano[x]}\n${player1.name} has ${player1.life} HP!` ,{parse_mode: 'HTML'});
-   }
-	break;
-	case 7: // Counter
-	player1.dano = 0;
-   	player1.life = player1.life - player1.dano;
-    	bot.sendMessage(chatId,` ${dictDano[x]}\n${player1.name} has ${player1.life} HP!` ,{parse_mode: 'HTML'});
-	break;
-	default:
-		console.log("error");
-	}
+    msgchat(player1,x)
 }
 //Function Def - Player 2
 const def2 = () => {
@@ -177,81 +126,9 @@ const def2 = () => {
    if (player2.life==undefined){
 	player2.life=10;
    }
-   switch (x) {
-	case 0:	//missed
-	player2.dano = x;
-  	player2.life = player2.life - player2.dano;
-      	bot.sendMessage(chatId,` ${dictDano[x]}\n${player2.name} has ${player2.life} HP!` ,{parse_mode: 'HTML'});
-   	break;
-	case 1:
-   	player2.dano = x;
-   	player2.life = player2.life - player2.dano;
-   	if(player2.life <= 0) {
-     	console.log(`${player2.name} FAINTED`);
-     	bot.sendMessage(chatId, `${player2.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
-   }else{
-    	  bot.sendMessage(chatId,` ${dictDano[x]}\n${player2.name} has ${player2.life} HP!` ,{parse_mode: 'HTML'});
-   }
-	break;
-	case 2:
-   	player2.dano = x;
-   	player2.life = player2.life - player2.dano;
-   	if(player2.life <= 0) {
-     	console.log(`${player2.name} FAINTED`);
-     	bot.sendMessage(chatId, `${player2.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
-   }else{
-    	  bot.sendMessage(chatId,` ${dictDano[x]}\n${player2.name} has ${player2.life} HP!` ,{parse_mode: 'HTML'});
-   }
-	break;
-	case 3:
-   	player2.dano = x;
-   	player2.life = player2.life - player2.dano;
-   	if(player2.life <= 0) {
-     	console.log(`${player2.name} FAINTED`);
-     	bot.sendMessage(chatId, `${player2.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
-   }else{
-    	  bot.sendMessage(chatId,` ${dictDano[x]}\n${player2.name} has ${player2.life} HP!` ,{parse_mode: 'HTML'});
-   }
-	break;
-        case 4:
-   	player2.dano = x;
-   	player2.life = player2.life - player2.dano;
-   	if(player2.life <= 0) {
-     	console.log(`${player2.name} FAINTED`);
-     	bot.sendMessage(chatId, `${player2.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
-   }else{
-    	  bot.sendMessage(chatId,` ${dictDano[x]}\n${player2.name} has ${player2.life} HP!` ,{parse_mode: 'HTML'});
-   }
-	break;
-        case 5: // Flinch
-   	player2.dano = 1;
-   	player2.life = player2.life - player2.dano;
-   	if(player2.life <= 0) {
-     	console.log(`${player2.name} FAINTED`);
-     	bot.sendMessage(chatId, `${player2.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
-   }else{
-    	  bot.sendMessage(chatId,` ${dictDano[x]}\n${player2.name} has ${player2.life} HP!` ,{parse_mode: 'HTML'});
-   }
-	break;
-	case 6:
-	player2.dano = x;
-   	player2.life = player2.life - player2.dano;
-   	if(player2.life <= 0) {
-     	console.log(`${player2.name} FAINTED`);
-     	bot.sendMessage(chatId, `${player2.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
-   }else{
-    	  bot.sendMessage(chatId,` ${dictDano[x]}\n${player2.name} has ${player2.life} HP!` ,{parse_mode: 'HTML'});
-   }
-	break;
-	case 7: // Counter
-	player2.dano = 0;
-   	player2.life = player2.life - player2.dano;
-    	bot.sendMessage(chatId,` ${dictDano[x]}\n${player2.name} has ${player2.life} HP!` ,{parse_mode: 'HTML'});
-	break;
-	default:
-		console.log("error");
-	}
+    msgchat(player2,x)
 }
+
 //Item Function - Player 1
 const item1 = () => {
 	player1.item -= 1;
