@@ -217,7 +217,7 @@ if((player1.id === undefined) || (player2.id === undefined)){
 		bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`);
 }
 }
-//}
+}
 //Use an Item
 let item = "Use an Item";
 if(msg.text.indexOf(item) === 0){
@@ -241,6 +241,6 @@ if((player1.id === undefined) || (player2.id === undefined)){
  }else{
      bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`);
 	}
-//}
+}
 }
 });//MAIN FUNCTION - END
