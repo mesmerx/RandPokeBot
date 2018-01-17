@@ -1,9 +1,15 @@
 {
   "scripts": {
-    "start": "node ./pokerand.js"
+    "lint": "eslint .",
+    "test": "jest",
+    "start": "node ./main.js"
   },
   "dependencies": {
     "mathjs": "^3.20.1",
     "node-telegram-bot-api": "^0.30.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.15.0",
+    "jest": "^22.1.2"
   }
 }
