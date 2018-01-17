@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "start": "node ./pokerand.js"
+  },
   "dependencies": {
     "mathjs": "^3.20.1",
     "node-telegram-bot-api": "^0.30.0"
