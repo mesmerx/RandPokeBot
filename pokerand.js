@@ -92,20 +92,21 @@ bot.sendDocument(chatId, randLine);
 //Function Def - Player 11121
 
 const msgchat = (player,x) => {
+    console.log(player,x)
         if (x==5){
         player.dano=1}
     else if(x==7){
         player.dano=0
     }
     else{
-       	player1.dano = x;
+       	player.dano = x;
     }
-   	player1.life = player1.life - player1.dano;
-   	if(player1.life <= 0) {
-     	    console.log(`${player1.name} FAINTED`);
-     	    bot.sendMessage(chatId, `${player1.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
+   	player.life = player.life - player.dano;
+   	if(player.life <= 0) {
+     	    console.log(`${player.name} FAINTED`);
+     	    bot.sendMessage(chatId, `${player.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
         }else{
-    	    bot.sendMessage(chatId,` ${dictDano[x]}\n${player1.name} has ${player1.life} HP!` ,{parse_mode: 'HTML'});
+    	    bot.sendMessage(chatId,` ${dictDano[x]}\n${player.name} has ${player.life} HP!` ,{parse_mode: 'HTML'});
    }
 	
 
@@ -117,6 +118,7 @@ const defp = (player) => {
    if (player.life==undefined){
 	player.life=10;
    }
+    console.log(player,x)
     msgchat(player,x)
 }
 
