@@ -111,22 +111,13 @@ const msgchat = (player,x) => {
 
 }
 
-const def1 = () => {
+const defp = (player) => {
    IntRandDano(arrayDano[n]);
    let x = parseInt(arrayDano[n]);
-   if (player1.life==undefined){
-	player1.life=10;
+   if (player.life==undefined){
+	player.life=10;
    }
-    msgchat(player1,x)
-}
-//Function Def - Player 2
-const def2 = () => {
-   IntRandDano(arrayDano[n]);
-   let x = parseInt(arrayDano[n]);
-   if (player2.life==undefined){
-	player2.life=10;
-   }
-    msgchat(player2,x)
+    msgchat(player,x)
 }
 
 //Item Function - Player 1
@@ -250,11 +241,11 @@ if((player1.id === undefined) || (player2.id === undefined)){
 	bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`);
 }else{
 	if (msg.from.id === player1.id){
-	   def1();
+	   defp(player1);
 	   writeRank(player1.life,player2.life);
 	   console.log(`Player 1: ${player1.name} executou Defend. HP atual: ${player1.life}`);
 	}else if (msg.from.id === player2.id){
-	   def2();
+	   defp(player2);
 	   writeRank(player1.life,player2.life);
 	   console.log(`Player 2: ${player2.name} executou Defend. HP atual: ${player2.life}`);
 	}else{
