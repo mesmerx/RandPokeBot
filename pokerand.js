@@ -26,17 +26,9 @@ const mainKeyboard = {
       }, parse_mode: 'HTML',
 }
 // Functions Declaration - START //
-const IntRand  = () => {
-	n = math.randomInt(1 , 11);
+const IntRand  = (x,y) => {
+	n = math.randomInt(x, y);
 	return n;
-}
-const IntRandDano  = () => {
-          n = math.randomInt(0, 37);
-          return n;
-}
-const IntRandItem  = () => {
-          n = math.randomInt(0, 6);
-          return n;
 }
 const checkPlayer = () => {
  if(player1.id === undefined){
@@ -54,9 +46,9 @@ const checkPlayer = () => {
 const rollDice = () => {
         checkPlayer(player1.id,player1.name,player2.id,player2.name);
 	if(player1.id === msg.from.id){
-	bot.sendMessage(chatId , `Player 1 = ${player1.name} , <pre>You got: ${IntRand()} </pre>`, {parse_mode: 'HTML'});
+	bot.sendMessage(chatId , `Player 1 = ${player1.name} , <pre>You got: ${IntRand(1,21)} </pre>`, {parse_mode: 'HTML'});
 }else if (player2.id === msg.from.id){
-        bot.sendMessage(chatId , `Player 2 = ${player2.name} , <pre>You got: ${IntRand()} </pre>`, {parse_mode: 'HTML'});
+        bot.sendMessage(chatId , `Player 2 = ${player2.name} , <pre>You got: ${IntRand(1,21)} </pre>`, {parse_mode: 'HTML'});
 }
 }
 const restartGame = () => {
@@ -89,10 +81,9 @@ bot.sendDocument(chatId, randLine);
 });     
 }
 
-//Function Def - Player 11121
+//Def Function
 
-const msgchat = (player,x) => {
-    console.log(player,x)
+const msgDef = (player,x) => {
         if (x==5){
         player.dano=1}
     else if(x==7){
@@ -107,73 +98,45 @@ const msgchat = (player,x) => {
      	    bot.sendMessage(chatId, `${player.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
         }else{
     	    bot.sendMessage(chatId,` ${dictDano[x]}\n${player.name} has ${player.life} HP!` ,{parse_mode: 'HTML'});
-   }
-	
-
+   }	
 }
 
-const defp = (player) => {
-   IntRandDano(arrayDano[n]);
+const defFunc = (player) => {
+   IntRand(0,37,arrayDano[n]);
    let x = parseInt(arrayDano[n]);
    if (player.life==undefined){
 	player.life=10;
    }
-    console.log(player,x)
-    msgchat(player,x)
+    console.log(`x = ${x}`)
+    msgDef(player,x)
 }
 
-//Item Function - Player 1
-const item1 = () => {
-	player1.item -= 1;
-	let j = IntRandItem();
-	switch (j) {
-		case 1:
-		case 2:
-		case 3:
-	  player1.life = player1.life + j;
-          bot.sendMessage(chatId, `${itemDict[j]}\nCongratulations, your HP is ${player1.life}.`, {parse_mode: 'HTML'});
-		break;
-		case 4:
-	  player1.life = player1.life - 3;
-          if(player1.life <= 0) {
-	     console.log(`${player1.name} FAINTED`);
-    	     bot.sendMessage(chatId, `${itemDict[j]}\n${player1.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
+//Item Function
+const msgItem = (player,j) => {
+        if (j==4){
+        player.life -=3}
+    else if(j==0 || j==5){
+        player.life += 0;
+    }else{
+   	player.life += j;}
+ 	if(player.life <= 0) {
+	     console.log(`${player.name} FAINTED`);
+    	     bot.sendMessage(chatId, `${itemDict[j]}\n${player.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
    }else{
-          bot.sendMessage(chatId, `${itemDict[j]}\nDamn! Your HP is ${player1.life}.`, {parse_mode: 'HTML'});
-   }
-		break;
-		case 0:
-		case 5:
-          bot.sendMessage(chatId, `${itemDict[j]}`, {parse_mode: 'HTML'});	
-		break;
+        bot.sendMessage(chatId, `${itemDict[j]}\nYour HP is ${player.life}.`, {parse_mode: 'HTML'});
 	}
 }
-//Function Item - Player 2
-const item2 = () => {
-	player2.item -= 1;
-	let j = IntRandItem();
-	switch (j) {
-		case 1:
-		case 2:
-		case 3:
-	  player2.life = player2.life + j;
-          bot.sendMessage(chatId, `${itemDict[j]}\nCongratulations, your HP is ${player2.life}.`, {parse_mode: 'HTML'});
-		break;
-		case 4:
-	  player2.life = player2.life - 3;
-          if(player2.life <= 0) {
-	     console.log(`${player2.name} FAINTED`);
-    	     bot.sendMessage(chatId, `${itemDict[j]}\n${player2.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
-   }else{
-          bot.sendMessage(chatId, `${itemDict[j]}\nDamn! Your HP is ${player2.life}.`, {parse_mode: 'HTML'});
-   }
-		break;
-		case 0:
-		case 5:
-          bot.sendMessage(chatId, `${itemDict[j]}`, {parse_mode: 'HTML'});	
-		break;
-	}
+const itemFunc = (player) => {
+	player.item -= 1;
+	if (player.life==undefined){
+		player.life=10;
+   	}
+	let j = IntRand(0,6);
+	msgItem(player,j);
+
 }
+
+
 // Functions Declaration END //
 
 //Damage array and Dict Damage
@@ -243,18 +206,18 @@ if((player1.id === undefined) || (player2.id === undefined)){
 	bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`);
 }else{
 	if (msg.from.id === player1.id){
-	   defp(player1);
+	   defFunc(player1);
 	   writeRank(player1.life,player2.life);
 	   console.log(`Player 1: ${player1.name} executou Defend. HP atual: ${player1.life}`);
 	}else if (msg.from.id === player2.id){
-	   defp(player2);
+	   defFunc(player2);
 	   writeRank(player1.life,player2.life);
 	   console.log(`Player 2: ${player2.name} executou Defend. HP atual: ${player2.life}`);
 	}else{
 		bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`);
 }
 }
-}
+//}
 //Use an Item
 let item = "Use an Item";
 if(msg.text.indexOf(item) === 0){
@@ -263,14 +226,14 @@ if((player1.id === undefined) || (player2.id === undefined)){
 }else{
   if (msg.from.id === player1.id){
           if(player1.item === 1){
-	    item1();
+	    itemFunc(player1);
 	    console.log(`Player 1 usou item`);
 	  }else{		
 	    bot.sendMessage(chatId, `${msg.from.first_name}, you've already used an item. You cannot use it twice, in the same match`);
 	  }
   }else if(msg.from.id === player2.id){
              if(player2.item === 1){
-	       item2();
+	       itemFunc(player2);
 	       console.log(`Player 2 usou item`);
 	     }else{
 	    bot.sendMessage(chatId, `${msg.from.first_name}, you've already used an item. You cannot use it twice, in the same match`);
@@ -278,6 +241,6 @@ if((player1.id === undefined) || (player2.id === undefined)){
  }else{
      bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`);
 	}
-}
+//}
 }
 });//MAIN FUNCTION - END
