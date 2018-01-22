@@ -51,7 +51,7 @@ const checkPlayer = (msg, player1, player2, bot) => {
     }
 }
 
-const rollDice = (msg, player1, player2, bot) => {
+const rollDice = ({msg, player1, player2, bot}) => {
     let chatId = msg.chat.id
     checkPlayer(msg, player1, player2, bot)
     if (player1.id === msg.from.id) {
@@ -153,6 +153,82 @@ const itemFunc = (player) => {
 
 }
 
+const menuStart = ({msg, bot}) => {
+    let chatId = msg.chat.id
+    return bot.sendMessage(chatId, `Hello,<b> ${msg.from.first_name}!</b>\nWelcome to PokeRand Game\nTap Roll a Dice to start`, mainKeyboard)
+}
+
+const menuRestart = ({msg, bot, player1, player2}) => {
+    let adminId = 318475027
+    let chatId = msg.chat.id
+    if (msg.from.id === adminId) {
+        restartGame(msg, player1, player2, bot)
+    } else if ((player1.life >= 1) && (player2.life >= 1) && !(player1.id === undefined)) {
+        bot.sendMessage(chatId, `${msg.from.first_name}, you cannot Restart a game in progress!`)
+    } else if ((player1.id === undefined) || (player2.id === undefined)) {
+        bot.sendMessage(chatId, `${msg.from.first_name}, there is no match happening right now. Please roll a Dice to start!`)
+    } else {
+        restartGame(msg, player1, player2, bot)
+    }
+}
+
+const menuAttack = ({msg, bot, player1, player2}) => {
+    let chatId = msg.chat.id
+    if ((player1.id === undefined) || (player2.id === undefined)) {
+        bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`)
+    } else {
+        checkPlayer(msg, player1, player2, bot)
+        if ((msg.from.id === player1.id) || (msg.from.id === player2.id)) {
+            randAttack()
+        }
+    }
+}
+
+const menuDeffend = ({msg, bot, player1, player2}) => {
+    let chatId = msg.chat.id
+    if ((player1.id === undefined) || (player2.id === undefined)) {
+        bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`)
+    } else {
+        if (msg.from.id === player1.id) {
+            defFunc(player1)
+            writeRank(player1.life, player2.life)
+            console.log(`Player 1: ${player1.name} executou Defend. HP atual: ${player1.life}`)
+        } else if (msg.from.id === player2.id) {
+            defFunc(player2)
+            writeRank(player1.life, player2.life)
+            console.log(`Player 2: ${player2.name} executou Defend. HP atual: ${player2.life}`)
+        } else {
+            bot.sendMessage(chatId, `${msg.from.first_name}, you"re not playing. Please wait, until the current match is over!`)
+        }
+    }
+}
+
+const menuUseItem = ({msg, bot, player1, player2}) => {
+    let chatId = msg.chat.id
+    if ((player1.id === undefined) || (player2.id === undefined)) {
+        bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`)
+    } else {
+        if (msg.from.id === player1.id) {
+            if (player1.item === 1) {
+                itemFunc(player1)
+                console.log("Player 1 usou item")
+            } else {
+                bot.sendMessage(chatId, `${msg.from.first_name}, you"ve already used an item. You cannot use it twice, in the same match`)
+            }
+        } else if (msg.from.id === player2.id) {
+            if (player2.item === 1) {
+                itemFunc(player2)
+                console.log("Player 2 usou item")
+            } else {
+                bot.sendMessage(chatId, `${msg.from.first_name}, you"ve already used an item. You cannot use it twice, in the same match`)
+            }
+        } else {
+            bot.sendMessage(chatId, `${msg.from.first_name}, you"re not playing. Please wait, until the current match is over!`)
+        }
+    }
+}
+
+
 const main = ({token}) => {
     const bot = new TelegramBot(token, {polling: true})
     const Player = {}
@@ -161,97 +237,37 @@ const main = ({token}) => {
     //  MAIN FUNCTION - START
     bot.on("message", (msg) => {
         console.log(JSON.stringify(msg))
-        let chatId = msg.chat.id
-        const {text} = msg
-        // Functions Declaration - START //
-        //Attack Function
-        //Def Function
-        //Item Function
-        // Functions Declaration END //
-
-        //Damage array and Dict Damage
-
         //Welcome msg and Menu
         const welcome = "/start"
         if (msg.text.indexOf(welcome) === 0) {
-            bot.sendMessage(chatId, `Hello,<b> ${msg.from.first_name}!</b>\nWelcome to PokeRand Game\nTap Roll a Dice to start`, mainKeyboard)
+            menuStart({msg, bot})
         }
         //Roll a dice
         let dice = "Roll a Dice"
         if (msg.text.indexOf(dice) === 0) {
-            rollDice()
+            rollDice({msg, player1, player2, bot})
         }
         //Restart
         let restart = "Restart"
-        let adminId = 318475027
         if (msg.text.indexOf(restart) === 0) {
-            if (msg.from.id === adminId) {
-                restartGame(msg, player1, player2, bot)
-            } else if ((player1.life >= 1) && (player2.life >= 1) && !(player1.id === undefined)) {
-                bot.sendMessage(chatId, `${msg.from.first_name}, you cannot Restart a game in progress!`)
-            } else if ((player1.id === undefined) || (player2.id === undefined)) {
-                bot.sendMessage(chatId, `${msg.from.first_name}, there is no match happening right now. Please roll a Dice to start!`)
-            } else {
-                restartGame(msg, player1, player2, bot)
-            }
+            menuRestart({msg, bot, player1, player2})
         }
         //Attack
         const atk = "Attack"
         if (msg.text.indexOf(atk) === 0) {
-            if ((player1.id === undefined) || (player2.id === undefined)) {
-                bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`)
-            } else {
-                checkPlayer(msg, player1, player2, bot)
-                if ((msg.from.id === player1.id) || (msg.from.id === player2.id)) {
-                    randAttack()
-                }
-            }
+            menuAttack({msg, bot, player1, player2})
         }
         //Defend
         let def = "Defend"
         if (msg.text.indexOf(def) === 0) {
-            if ((player1.id === undefined) || (player2.id === undefined)) {
-                bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`)
-            } else {
-                if (msg.from.id === player1.id) {
-                    defFunc(player1)
-                    writeRank(player1.life, player2.life)
-                    console.log(`Player 1: ${player1.name} executou Defend. HP atual: ${player1.life}`)
-                } else if (msg.from.id === player2.id) {
-                    defFunc(player2)
-                    writeRank(player1.life, player2.life)
-                    console.log(`Player 2: ${player2.name} executou Defend. HP atual: ${player2.life}`)
-                } else {
-                    bot.sendMessage(chatId, `${msg.from.first_name}, you"re not playing. Please wait, until the current match is over!`)
-                }
-            }
+            menuDeffend({msg, bot, player1, player2})
         }
         //Use an Item
         let item = "Use an Item"
         if (msg.text.indexOf(item) === 0) {
-            if ((player1.id === undefined) || (player2.id === undefined)) {
-                bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`)
-            } else {
-                if (msg.from.id === player1.id) {
-                    if (player1.item === 1) {
-                        itemFunc(player1)
-                        console.log("Player 1 usou item")
-                    } else {
-                        bot.sendMessage(chatId, `${msg.from.first_name}, you"ve already used an item. You cannot use it twice, in the same match`)
-                    }
-                } else if (msg.from.id === player2.id) {
-                    if (player2.item === 1) {
-                        itemFunc(player2)
-                        console.log("Player 2 usou item")
-                    } else {
-                        bot.sendMessage(chatId, `${msg.from.first_name}, you"ve already used an item. You cannot use it twice, in the same match`)
-                    }
-                } else {
-                    bot.sendMessage(chatId, `${msg.from.first_name}, you"re not playing. Please wait, until the current match is over!`)
-                }
-            }
+            menuUseItem({msg, bot, player1, player2})
         }
     })
 }
 
-exports = {main}
+exports.main = main
