@@ -2,7 +2,8 @@
   "scripts": {
     "lint": "eslint .",
     "test": "jest",
-    "start": "node ./main.js"
+    "start": "node ./main.js",
+    "check": "npm run lint && npm run test"
   },
   "dependencies": {
     "mathjs": "^3.20.1",
