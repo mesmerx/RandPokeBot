@@ -2,12 +2,31 @@ const math = require('mathjs')
 const fs = require('fs')
 const TelegramBot = require('node-telegram-bot-api')
 
+const IntRand = (x, y) => {
+    const n = math.randomInt(x, y)
+    return n
+}
+
+const checkPlayer = ({player1, player2, msg, bot}) => {
+    let chatId = msg.chat.id
+    if (player1.id === undefined) {
+        player1.id = msg.from.id
+        player1.name = msg.from.first_name
+    } else if (player2.id === undefined && player1.id !== msg.from.id) {
+        player2.id = msg.from.id
+        player2.name = msg.from.first_name
+    } else if ((msg.from.id !== player1.id) && (msg.from.id !== player2.id)) {
+        bot.sendMessage(chatId, 'There are already two players in the game. Please, wait until the current match is over!')
+    }
+}
+
+const Player = {}
+
 //MAIN FUNCTION - START
 const main = ({token}) => {
     const bot = new TelegramBot(token, {polling: true})
 
     let match
-    const Player = {}
     let player1 = Object.create(Player)
     let player2 = Object.create(Player)
     bot.on('message', (msg) => {
@@ -22,23 +41,8 @@ const main = ({token}) => {
             }, parse_mode: 'HTML',
         }
         // Functions Declaration - START //
-        const IntRand = (x, y) => {
-            const n = math.randomInt(x, y)
-            return n
-        }
-        const checkPlayer = () => {
-            if (player1.id === undefined) {
-                player1.id = msg.from.id
-                player1.name = msg.from.first_name
-            } else if (player2.id === undefined && player1.id !== msg.from.id) {
-                player2.id = msg.from.id
-                player2.name = msg.from.first_name
-            } else if ((msg.from.id !== player1.id) && (msg.from.id !== player2.id)) {
-                bot.sendMessage(chatId, 'There are already two players in the game. Please, wait until the current match is over!')
-            }
-        }
         const rollDice = () => {
-            checkPlayer(player1, player2)
+            checkPlayer({player1, player2, bot, msg})
             if (player1.id === msg.from.id && player1.num === undefined) {
                 player1.num = IntRand(1, 20)
                 bot.sendMessage(chatId, `Player 1 = ${player1.name} , <pre>You got: ${player1.num} </pre>`, {parse_mode: 'HTML'})
@@ -348,3 +352,5 @@ const main = ({token}) => {
 }
 
 exports.main = main
+exports.checkPlayer = checkPlayer
+exports.Player = Player
