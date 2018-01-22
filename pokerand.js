@@ -128,13 +128,13 @@ const main = ({token}) => {
                 player2.turnDef++
                 randAttack()
             } else if (msg.from.id === player1.id && player1.turnAtk === 0) {
-                bot.sendMessage(chatId, `${player1.name}, it's not your time to attack. Wait for ${player2.name}'s defense!`)
+                bot.sendMessage(chatId, `${player1.name}, wait for your turn to attack!`)
             } else if (msg.from.id === player2.id && player2.turnAtk >= 1) {
                 player2.turnAtk--
                 player1.turnDef++
                 randAttack()
             } else if (msg.from.id === player2.id && player2.turnAtk === 0) {
-                bot.sendMessage(chatId, `${player2.name}, it's not your time to attack. Wait for ${player1.name}'s defense!`)
+                bot.sendMessage(chatId, `${player2.name}, wait for your turn to attack!`)
             }
         }
         //Def Function
@@ -188,14 +188,14 @@ const main = ({token}) => {
                 defFunc(player1)
                 console.log(`Player 1: ${player1.name} executou Defend. HP atual: ${player1.life}`)
             } else if (msg.from.id === player1.id && player1.turnDef === 0) {
-                bot.sendMessage(chatId, `${player1.name}, it's not your time to defend. Wait for ${player2.name}'s attack!`)
+                bot.sendMessage(chatId, `${player1.name}, wait for your turn to defend!`)
             } else if (msg.from.id === player2.id && player2.turnDef >= 1) {
                 player2.turnDef--
                 player2.turnAtk++
                 defFunc(player2)
                 console.log(`Player 2: ${player2.name} executou Defend. HP atual: ${player2.life}`)
             } else if (msg.from.id === player2.id && player2.turnDef === 0) {
-                bot.sendMessage(chatId, `${player2.name}, it's not your time to defend. Wait for ${player1.name}'s attack!`)
+                bot.sendMessage(chatId, `${player2.name}, wait for your turn to defend!`)
             }
         }
 
@@ -323,7 +323,7 @@ const main = ({token}) => {
                 } else {
                     bot.sendMessage(chatId, `${player1.name}, you've already used an item. You cannot use it twice, in the same match`)
                 }
-            } else if (msg.from.id === player1.id && player1.turnAtk <= 0) {
+            } else if (msg.from.id === player1.id && player1.turnAtk <= 0 && match === 1) {
                 bot.sendMessage(chatId, `${player1.name}, you cannot use an item right now. Wait your attack turn!`)
             }
 
@@ -334,7 +334,7 @@ const main = ({token}) => {
                 } else {
                     bot.sendMessage(chatId, `${player2.name}, you've already used an item. You cannot use it twice, in the same match`)
                 }
-            } else if (msg.from.id === player2.id && player2.turnAtk <= 0) {
+            } else if (msg.from.id === player2.id && player2.turnAtk <= 0 && match === 1) {
                 bot.sendMessage(chatId, `${player2.name}, you cannot use an item right now. Wait your attack turn!`)
             }
 
