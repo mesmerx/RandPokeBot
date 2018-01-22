@@ -7,6 +7,7 @@ const TOKEN = ('458733904:AAH-Fq8ABp5xVpLHf32uxKAbP-nMCLf4mgU');
 
 const bot = new TelegramBot( TOKEN, { polling: true } );
 
+let match;
 const Player={};
 let player1 = Object.create(Player);
 let player2 = Object.create(Player);
@@ -30,37 +31,80 @@ const IntRand  = (x,y) => {
 	n = math.randomInt(x, y);
 	return n;
 }
-const checkPlayer = () => {
- if(player1.id === undefined){
+const checkPlayer = (player) => {
+ if(player1.id == undefined){
 	player1.id = msg.from.id;
 	player1.name = msg.from.first_name;
-	console.log(`Player 1 = ${player1.name} , ID = ${player1.id}`);
-} else if (player2.id === undefined && player1.id !== msg.from.id){
+} else if (player2.id == undefined && player1.id != msg.from.id){
 	player2.id = msg.from.id;
 	player2.name = msg.from.first_name;
-	console.log(`Player 2 = ${player2.name} , ID = ${player2.id}`);
-}else if((msg.from.id !== player1.id) && (msg.from.id !== player2.id)){
+}else if((msg.from.id != player1.id) && (msg.from.id != player2.id)){
 	bot.sendMessage(chatId, 'There are already two players in the game. Please, wait until the current match is over!');
 }
 }
-const rollDice = () => {
-        checkPlayer(player1.id,player1.name,player2.id,player2.name);
-	if(player1.id === msg.from.id){
-	bot.sendMessage(chatId , `Player 1 = ${player1.name} , <pre>You got: ${IntRand(1,21)} </pre>`, {parse_mode: 'HTML'});
-}else if (player2.id === msg.from.id){
-        bot.sendMessage(chatId , `Player 2 = ${player2.name} , <pre>You got: ${IntRand(1,21)} </pre>`, {parse_mode: 'HTML'});
-}
+const rollDice = (player) => {
+        checkPlayer(player1,player2);	
+	if(player1.id == msg.from.id && player1.num == undefined){
+		player1.num = IntRand(1,20);
+		bot.sendMessage(chatId , `Player 1 = ${player1.name} , <pre>You got: ${player1.num} </pre>`, {parse_mode: 'HTML'});
+		player1.life = 10;
+		player1.item = 1;
+		player1.turnAtk = 0;
+		player1.turnDef = 0;
+		console.log(`Player 1 = ${player1.name} , ID = ${player1.id} , Dice: ${player1.num}`);
+	}else if(player1.id == msg.from.id){
+   		bot.sendMessage(chatId, `${player1.name}, you cannot roll a dice again. Wait for another player!`);
+	}else{
+		if(player2.id == msg.from.id && player2.num == undefined){
+		player2.num = IntRand(1,20);
+        	bot.sendMessage(chatId , `Player 2 = ${player2.name} , <pre>You got: ${player2.num} </pre>`, {parse_mode: 'HTML'});
+		player2.life = 10;
+		player2.item = 1;
+		player2.turnAtk = 0;
+		player2.turnDef = 0;
+		console.log(`Player 2 = ${player2.name} , ID = ${player2.id} , Dice: ${player2.num}`);
+		}
+	}
+	if(player1.num == player2.num && player1.id != undefined){
+       	 	bot.sendMessage(chatId , 'Players got the same result. Please roll a dice again!');
+		player1.num=undefined;
+		player1.turnAtk = 0;
+		player1.turnDef = 0;
+		player1.item = 1;
+		player2.num=undefined;
+		player2.turnAtk = 0;
+		player2.turnDef = 0;
+		player2.item = 1;
+	}else if(player1.num > player2.num){
+       	 	bot.sendMessage(chatId , `${player1.name} will attack first!`);
+	        player1.turnAtk = 1;
+		match = 1;
+	}else if(player2.num > player1.num){
+       	 	bot.sendMessage(chatId , `${player2.name} will attack first!`);
+		player2.turnAtk = 1;
+		match = 1;
+	}
+			
 }
 const restartGame = () => {
+  match = 0;
   player1.life = 10;
   player1.id = undefined;
   player1.item = 1;
+  player1.num = undefined;
+  player1.turnAtk = 0;
+  player1.turnDef = 0;
   player2.life = 10;  
   player2.id = undefined;
   player2.item = 1;
+  player2.num = undefined;
+  player2.turnAtk = 0; 
+  player2.turnDef = 0;
   bot.sendMessage (chatId, 'Game restarted! Please ROLL A DICE.');
 }
-const writeRank = () => {
+
+//Rank Function - not deployed yet
+const writeRank = (player) => {
   if(player1.life <= 0){
      fs.writeFile('rank.txt' , `${player2.name}\n` ,{ flag: "a" } , function(err){
   if(err) throw err;                          
@@ -73,26 +117,56 @@ const writeRank = () => {
 }
 //Attack Function
 const randAttack = () => {                    
- fs.readFile('fileId.txt', function(err, data){
-   if(err) throw err;  
-     let lines = data.toString().split('\n');  
-     let randLine = lines[math.floor(math.random()*lines.length)];            
-bot.sendDocument(chatId, randLine);  
+	fs.readFile('fileId.txt', function(err, data){
+   	if(err) throw err;  
+     	let lines = data.toString().split('\n');
+     	let randLine = lines[math.floor(math.random()*lines.length-2)];            
+	bot.sendDocument(chatId, randLine);
 });     
 }
 
+const checkAtkTurn = (player) => {
+  	if(msg.from.id == player1.id && player1.turnAtk >= 1){
+	  	player1.turnAtk --;
+		player2.turnDef ++;
+		randAttack();
+	}else if(msg.from.id == player1.id && player1.turnAtk == 0){
+		bot.sendMessage(chatId, `${player1.name}, it's not your time to attack. Wait for ${player2.name}'s defense!`);
+	}else if(msg.from.id == player2.id && player2.turnAtk >= 1){
+	  	player2.turnAtk --;
+		player1.turnDef ++;
+		randAttack();
+	}else if(msg.from.id == player2.id && player2.turnAtk == 0){
+		bot.sendMessage(chatId, `${player2.name}, it's not your time to attack. Wait for ${player1.name}'s defense!`);
+		}
+}
 //Def Function
 
 const msgDef = (player,x) => {
-        if (x==5){
-        player.dano=1}
-    else if(x==7){
-        player.dano=0
-    }
-    else{
-       	player.dano = x;
-    }
-   	player.life = player.life - player.dano;
+        if (x==5){//FLINCH
+        	player.dano=1;
+		if(msg.from.id == player1.id){
+			player1.turnAtk --;
+			player2.turnAtk ++;
+		}else{
+			player2.turnAtk --;
+			player1.turnAtk ++;
+		}
+	}else if(x==7){//COUNTER
+        	player.dano=0
+		if(msg.from.id == player1.id){
+			player1.turnAtk ++;
+			player2.turnAtk --;
+		//	console.log(`Player 1 usou COUNTER. tem ATK: ${player1.turnAtk} e P2 tem ATK: ${player2.turnAtk}`);
+		}else{
+			player2.turnAtk ++;
+			player1.turnAtk --;
+		//	console.log(`Player 2 usou COUNTER. tem ATK: ${player2.turnAtk} e P1 tem ATK: ${player1.turnAtk}`);
+		}
+    	}else{
+       		player.dano = x;
+    	}
+   		player.life = player.life - player.dano;
    	if(player.life <= 0) {
      	    console.log(`${player.name} FAINTED`);
      	    bot.sendMessage(chatId, `${player.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
@@ -102,41 +176,64 @@ const msgDef = (player,x) => {
 }
 
 const defFunc = (player) => {
-   IntRand(0,37,arrayDano[n]);
-   let x = parseInt(arrayDano[n]);
-   if (player.life==undefined){
-	player.life=10;
-   }
-    console.log(`x = ${x}`)
-    msgDef(player,x)
+	IntRand(0,37,arrayDano[n]);
+	let x = parseInt(arrayDano[n]);
+   	if (player.life==undefined){
+		player.life=10;
+   	}
+    	msgDef(player,x);
+}
+
+const checkDefTurn = (player) => {
+	if(msg.from.id == player1.id && player1.turnDef >= 1){	
+	  	player1.turnDef --;
+		player1.turnAtk ++;
+		defFunc(player1);
+	   	console.log(`Player 1: ${player1.name} executou Defend. HP atual: ${player1.life}`);	
+	}else if(msg.from.id == player1.id && player1.turnDef == 0){
+		bot.sendMessage(chatId, `${player1.name}, it's not your time to defend. Wait for ${player2.name}'s attack!`);
+	}else if(msg.from.id == player2.id && player2.turnDef >= 1){
+	  	player2.turnDef --;
+		player2.turnAtk ++;
+	  	defFunc(player2);
+  		console.log(`Player 2: ${player2.name} executou Defend. HP atual: ${player2.life}`);
+	}else if(msg.from.id == player2.id && player2.turnDef == 0){
+		bot.sendMessage(chatId, `${player2.name}, it's not your time to defend. Wait for ${player1.name}'s attack!`);
+	}
 }
 
 //Item Function
 const msgItem = (player,j) => {
-        if (j==4){
-        player.life -=3}
-    else if(j==0 || j==5){
-        player.life += 0;
-    }else{
-   	player.life += j;}
+	if (j==4){
+        	player.life -=3}
+	else if(j==0){
+        	player.life += 0;
+	}else if(j==5){
+		player.life += 0;
+		if(msg.from.id == player1.id){
+			player1.turnAtk ++;
+			player2.turnAtk --;
+		}else{
+			player2.turnAtk ++;
+			player1.turnAtk --;
+		}
+    	}else{
+   		player.life += j;}
  	if(player.life <= 0) {
-	     console.log(`${player.name} FAINTED`);
-    	     bot.sendMessage(chatId, `${itemDict[j]}\n${player.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
-   }else{
-        bot.sendMessage(chatId, `${itemDict[j]}\nYour HP is ${player.life}.`, {parse_mode: 'HTML'});
+		console.log(`${player.name} FAINTED`);
+    		bot.sendMessage(chatId, `${itemDict[j]}\n${player.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>` , { parse_mode: 'HTML'});
+   	}else{
+        	bot.sendMessage(chatId, `${itemDict[j]}\nYour HP is ${player.life}.`, {parse_mode: 'HTML'});
 	}
 }
-const itemFunc = (player) => {
+const itemFunc = (player) => {	
 	player.item -= 1;
 	if (player.life==undefined){
 		player.life=10;
    	}
 	let j = IntRand(0,6);
 	msgItem(player,j);
-
 }
-
-
 // Functions Declaration END //
 
 //Damage array and Dict Damage
@@ -164,13 +261,17 @@ let itemDict = {
 //Welcome msg and Menu
 const welcome = '/start';
 if(msg.text.indexOf(welcome) === 0){
-    bot.sendMessage (chatId , `Hello,<b> ${msg.from.first_name}!</b>\nWelcome to PokeRand Game\nTap Roll a Dice to start` ,mainKeyboard );
+	bot.sendMessage (chatId , `Hello,<b> ${msg.from.first_name}!</b>\nWelcome to PokeRand Game\nTap Roll a Dice to start` ,mainKeyboard );
 }
 
 //Roll a dice
 let dice = "Roll a Dice";
 if (msg.text.indexOf(dice) === 0){
-	rollDice();
+	if(match == 1){
+   		bot.sendMessage (chatId , `<b>Sorry, ${msg.from.first_name}!</b>\nYou cannot roll a dice while a match is in progress`, {parse_mode: "html"});
+	}else{
+		rollDice(player1,player2);
+	}
 }
 
 //Restart
@@ -179,7 +280,7 @@ let adminId = 318475027;
 if (msg.text.indexOf(restart) === 0){
 	if(msg.from.id === adminId){
 		restartGame();
-	}else if((player1.life >= 1) && (player2.life >=1) && !(player1.id === undefined)){
+	}else if((player1.life >= 1) && (player2.life >=1) && (player1.id != undefined)){
    bot.sendMessage(chatId, `${msg.from.first_name}, you cannot Restart a game in progress!`);
 }else if((player1.id === undefined) || (player2.id === undefined)){
        bot.sendMessage(chatId, `${msg.from.first_name}, there is no match happening right now. Please roll a Dice to start!`);
@@ -190,57 +291,58 @@ if (msg.text.indexOf(restart) === 0){
 //Attack	
 const atk = "Attack"; 
 if (msg.text.indexOf(atk) === 0) {
-if((player1.id === undefined) || (player2.id === undefined)){
+	if((player1.id == undefined) || (player2.id == undefined)){
 	bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`);
-}else{
-  checkPlayer(player1.id,player1.name,player2.id,player2.name);
-  if((msg.from.id === player1.id) || (msg.from.id === player2.id)){
-	  randAttack();
-	}
-}
+	}else if(msg.from.id != player1.id && msg.from.id != player2.id){
+		bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`);	
+	}else{
+		checkAtkTurn(player1,player2);
+	//	console.log(`Player 1 Atk: ${player1.turnAtk}`);		
+	//	console.log(`Player 2 Atk: ${player2.turnAtk}`);
+		}
 }
 //Defend
 let def = "Defend"; 
 if (msg.text.indexOf(def) === 0) {
-if((player1.id === undefined) || (player2.id === undefined)){
-	bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`);
-}else{
-	if (msg.from.id === player1.id){
-	   defFunc(player1);
-	   writeRank(player1.life,player2.life);
-	   console.log(`Player 1: ${player1.name} executou Defend. HP atual: ${player1.life}`);
-	}else if (msg.from.id === player2.id){
-	   defFunc(player2);
-	   writeRank(player1.life,player2.life);
-	   console.log(`Player 2: ${player2.name} executou Defend. HP atual: ${player2.life}`);
+	if((player1.id == undefined) || (player2.id == undefined)){
+		bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`);
+	}else if(msg.from.id != player1.id && msg.from.id != player2.id){
+		bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`);	
 	}else{
-		bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`);
-}
-}
+		checkDefTurn(player1,player2);
+	//	console.log(`Player 1 Def: ${player1.turnDef}`);
+//		console.log(`Player 2 Def: ${player2.turnDef}`);
+		}
 }
 //Use an Item
 let item = "Use an Item";
 if(msg.text.indexOf(item) === 0){
-if((player1.id === undefined) || (player2.id === undefined)){
-	bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`);
-}else{
-  if (msg.from.id === player1.id){
-          if(player1.item === 1){
-	    itemFunc(player1);
-	    console.log(`Player 1 usou item`);
-	  }else{		
-	    bot.sendMessage(chatId, `${msg.from.first_name}, you've already used an item. You cannot use it twice, in the same match`);
-	  }
-  }else if(msg.from.id === player2.id){
-             if(player2.item === 1){
-	       itemFunc(player2);
-	       console.log(`Player 2 usou item`);
-	     }else{
-	    bot.sendMessage(chatId, `${msg.from.first_name}, you've already used an item. You cannot use it twice, in the same match`);
-	     }
- }else{
-     bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`);
+	if(msg.from.id == player1.id && player1.turnAtk >= 1 ){
+		if(player1.item == 1){
+	    		itemFunc(player1);
+	    		console.log(`Player 1 usou item`);
+		}else{		
+	    		bot.sendMessage(chatId, `${player1.name}, you've already used an item. You cannot use it twice, in the same match`);
+	  	}
+	}else if(msg.from.id == player1.id && player1.turnAtk <= 0){
+		bot.sendMessage(chatId, `${player1.name}, you cannot use an item right now. Wait your attack turn!`);
 	}
-}
+
+	if(msg.from.id == player2.id && player2.turnAtk >= 1){
+		if(player2.item == 1){
+			itemFunc(player2);
+	       		console.log(`Player 2 usou item`);
+		}else{
+	    		bot.sendMessage(chatId, `${player2.name}, you've already used an item. You cannot use it twice, in the same match`);
+	     	}
+	}else if(msg.from.id == player2.id && player2.turnAtk <= 0){
+		bot.sendMessage(chatId, `${player2.name}, you cannot use an item right now. Wait your attack turn!`);
+	}
+	
+	if((player1.id == undefined) || (player2.id == undefined)){
+		bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`);
+	}else if(msg.from.id != player1.id && msg.from.id != player2.id){
+     bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`);		
+	}
 }
 });//MAIN FUNCTION - END
