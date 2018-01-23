@@ -163,9 +163,9 @@ test('onMessage - primeira mensagem',
         const match = {value: 0}
         let botState = []
         const bot = {chat: {id: 0}, sendMessage: (id, msg) => botState.push({id, msg})}
-        rollDice({
+        onMessage({
             match, player1, player2, bot, msg: {
-                text: 'Attack',
+                text: 'Roll a Dice',
                 from: {id: 123, first_name: 'Tester 1'},
                 chat: {id: 123}
             }
