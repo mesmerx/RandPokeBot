@@ -2,6 +2,7 @@
   "scripts": {
     "lint": "eslint .",
     "test": "jest",
+    "dev": "jest --watch",
     "start": "node ./main.js",
     "check": "npm run lint && npm run test"
   },

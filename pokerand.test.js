@@ -1,4 +1,4 @@
-const {checkPlayer, Player, rollDice} = require('./pokerand')
+const {checkPlayer, Player, rollDice, onMessage} = require('./pokerand')
 
 // const mock_msg = {"message_id":7205,"from":{"id":116632598,"is_bot":false,"first_name":"Enzzo","username":"souenzzo","language_code":"en"},"chat":{"id":-209063185,"title":"RandPokeBot - Project Lab","type":"group","all_members_are_administrators":true},"date":1516237642,"reply_to_message":{"message_id":7164,"from":{"id":458733904,"is_bot":true,"first_name":"PokeRand Games","username":"Bertinnnbot"},"chat":{"id":-209063185,"title":"RandPokeBot - Project Lab","type":"group","all_members_are_administrators":true},"date":1516237493,"text":"Hello, Enzzo!\nWelcome to PokeRand Game\nTap Roll a Dice to start","entities":[{"offset":6,"length":7,"type":"bold"}]},"text":"Attack"}
 
@@ -154,6 +154,27 @@ test('rollDice - usuario 1 tentando entrar duas vezes',
         expect(botState).toEqual([{id: 123, msg: `Player 1 = Tester 1 , <pre>You got: ${player1.num} </pre>`},
             {id: 123, msg: 'Tester 1, you cannot roll a dice again. Wait for another player!'}])
     }
-
 )
+
+test('onMessage - primeira mensagem',
+    () => {
+        const player1 = Object.create(Player)
+        const player2 = Object.create(Player)
+        const match = {value: 0}
+        let botState = []
+        const bot = {chat: {id: 0}, sendMessage: (id, msg) => botState.push({id, msg})}
+        rollDice({
+            match, player1, player2, bot, msg: {
+                text: 'Attack',
+                from: {id: 123, first_name: 'Tester 1'},
+                chat: {id: 123}
+            }
+        })
+        const randNum = player1.num
+        expect(player1).toEqual({id: 123, item: 1, life: 10, name: 'Tester 1', num: randNum, turnAtk: 0, turnDef: 0})
+        expect(player2).toEqual({})
+        expect(botState).toEqual([{id: 123, msg: `Player 1 = Tester 1 , <pre>You got: ${randNum} </pre>`}])
+    }
+)
+
 
