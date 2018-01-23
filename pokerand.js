@@ -31,6 +31,10 @@ const checkPlayer = ({player1, player2, msg, bot}) => {
 }
 
 const rollDice = ({match, player1, player2, bot, msg}) => {
+    if (match.value === 1) {
+        bot.sendMessage(chatId, `<b>Sorry, ${msg.from.first_name}!</b>\nYou cannot roll a dice while a match is in progress`, {parse_mode: 'html'})
+        return null
+    }
     let chatId = msg.chat.id
     checkPlayer({player1, player2, bot, msg})
     if (player1.id === msg.from.id && player1.num === undefined) {
@@ -271,11 +275,7 @@ const main = ({token}) => {
         //Roll a dice
         let dice = 'Roll a Dice'
         if (msg.text.indexOf(dice) === 0) {
-            if (match.value === 1) {
-                bot.sendMessage(chatId, `<b>Sorry, ${msg.from.first_name}!</b>\nYou cannot roll a dice while a match is in progress`, {parse_mode: 'html'})
-            } else {
-                rollDice({player1, player2, match, msg, bot})
-            }
+            rollDice({player1, player2, match, msg, bot})
         }
 
         //Restart
