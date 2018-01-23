@@ -12,6 +12,29 @@ const mainKeyboard = {
     }, parse_mode: 'HTML',
 }
 
+const arrayDano = ['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '3', '3', '3', '4', '4', '6', '0', '0', '0', '0', '0', '0', '0', '0', '5', '5', '7', '7']
+
+const dictDano = {
+    0: ['Your opponent missed the attack!'],
+    1: ['It was effective! You lose 1 HP.'],
+    2: ['It was effective! <b>CRITICAL HIT!</b> You lose 2 HP.'],
+    3: ['It was ultra effective! You lose 3 HP.'],
+    4: ['It was super effective! <b>CRITICAL HIT!</b> You lose 4 HP.'],
+    5: ['It was effective! You lose 1 HP. You flinched! Opponent attacks again.'],
+    6: ['It was ultra effective! <b>CRITICAL HIT!</b> You lose 6 HP.'],
+    7: ['COUNTER! You take no damage and have an extra attack!'],
+}
+
+const itemDict = {
+    0: ['You found nothing!'],
+    1: ['You found a Potion and recovered 1 HP!'],
+    2: ['You found a Super Potion and recovered 2 HP!'],
+    3: ['You found a Hyper Potion and recovered 3 HP!'],
+    4: ['You found a Flame Orb and lost 3 HP.'],
+    5: ['You found a Quick Claw and can attack twice!'],
+}
+
+
 const IntRand = (x, y) => {
     return math.randomInt(x, y)
 }
@@ -236,27 +259,6 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
     // Functions Declaration END //
 
     //Damage array and Dict Damage
-    let arrayDano = ['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '3', '3', '3', '4', '4', '6', '0', '0', '0', '0', '0', '0', '0', '0', '5', '5', '7', '7']
-    let dictDano = {
-        0: ['Your opponent missed the attack!'],
-        1: ['It was effective! You lose 1 HP.'],
-        2: ['It was effective! <b>CRITICAL HIT!</b> You lose 2 HP.'],
-        3: ['It was ultra effective! You lose 3 HP.'],
-        4: ['It was super effective! <b>CRITICAL HIT!</b> You lose 4 HP.'],
-        5: ['It was effective! You lose 1 HP. You flinched! Opponent attacks again.'],
-        6: ['It was ultra effective! <b>CRITICAL HIT!</b> You lose 6 HP.'],
-        7: ['COUNTER! You take no damage and have an extra attack!'],
-    }
-    //Dict item
-    let itemDict = {
-        0: ['You found nothing!'],
-        1: ['You found a Potion and recovered 1 HP!'],
-        2: ['You found a Super Potion and recovered 2 HP!'],
-        3: ['You found a Hyper Potion and recovered 3 HP!'],
-        4: ['You found a Flame Orb and lost 3 HP.'],
-        5: ['You found a Quick Claw and can attack twice!'],
-    }
-
     //Welcome msg and Menu
     const welcome = '/start'
     if (msg.text.indexOf(welcome) === 0) {
