@@ -71,7 +71,7 @@ test('rollDice - primeira mensagem',
         const randNum = player1.num
         expect(player1).toEqual({id: 123, item: 1, life: 10, name: 'Tester 1', num: randNum, turnAtk: 0, turnDef: 0})
         expect(player2).toEqual({})
-        expect(botState).toEqual([{id: 123, msg: `Player 1 = Tester , <pre>You got: ${randNum} </pre>`}])
+        expect(botState).toEqual([{id: 123, msg: `Player 1 = Tester 1 , <pre>You got: ${randNum} </pre>`}])
     }
 )
 
