@@ -39,6 +39,19 @@ const IntRand = (x, y) => {
     return math.randomInt(x, y)
 }
 
+// Recebe um array ou um mapa
+// Retorna um elemento aleatorio
+// randNth({1: 'foo', 2: 'bar'}) vai retornar 'foo' ou 'bar'
+// randNth(['foo', 'bar']) vai retornar 'foo' ou 'bar'
+// ;)
+const randNth = coll => {
+    const xs = Object.entries(coll || [])
+    const max = xs.length
+    const nth = Math.floor(Math.random() * max)
+    const [, v] = xs[nth] || [null, null]
+    return v
+}
+
 const checkPlayer = ({player1, player2, msg, bot}) => {
     let chatId = msg.chat.id
     if (player1.id === undefined) {
@@ -361,3 +374,4 @@ exports.checkPlayer = checkPlayer
 exports.Player = Player
 exports.rollDice = rollDice
 exports.onMessage = onMessage
+exports.randNth = randNth
