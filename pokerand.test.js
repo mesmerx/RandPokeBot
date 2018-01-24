@@ -189,4 +189,25 @@ test('onMessage - primeira mensagem',
     }
 )
 
+test('onMessage - usuários não podem rolar os dados duas vezes.',
+    () => {
+        const player1 = {id: 111, item: 1, life: 10, name: 'Tester 1', num: 1, turnAtk: 0, turnDef: 0}
+        const player2 = {id: 222, item: 1, life: 10, name: 'Tester 2', num: 20, turnAtk: 1, turnDef: 0}
+        const match = {value: 0}
+        let botState = []
+        const bot = {chat: {id: 0}, sendMessage: (id, msg) => botState.push({id, msg})}
+        onMessage({
+            match, player1, player2, bot, msg: {
+                text: 'Roll a Dice',
+                from: {id: 111, first_name: 'Tester 1'},
+                chat: {id: 123}
+            }
+        })
+        expect(player1).toEqual({id: 111, item: 1, life: 10, name: 'Tester 1', num: 1, turnAtk: 0, turnDef: 0})
+        expect(player2).toEqual({id: 222, item: 1, life: 10, name: 'Tester 2', num: 20, turnAtk: 1, turnDef: 0})
+        expect(botState).toEqual([{id: 123, msg: 'Tester 1, you cannot roll a dice again. Wait for another player!'},
+            {id: 123, msg: 'Tester 2 will attack first!'}])
+    }
+)
+
 
