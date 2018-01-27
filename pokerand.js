@@ -91,7 +91,10 @@ const rollDice = ({match, player1, player2, bot, msg}) => {
             player2.turnAtk = 0
             player2.turnDef = 0
             console.log(`Player 2 = ${player2.name} , ID = ${player2.id} , Dice: ${player2.num}`)
-        }
+        }else if (player2.id === msg.from.id)
+	    {
+        	bot.sendMessage(chatId, `${player2.name}, you cannot roll a dice again. Wait for another player!`)
+    	} 
     }
     if (player1.num === player2.num && player1.id !== undefined) {
         bot.sendMessage(chatId, 'Players got the same result. Please roll a dice again!')
@@ -103,11 +106,11 @@ const rollDice = ({match, player1, player2, bot, msg}) => {
         player2.turnAtk = 0
         player2.turnDef = 0
         player2.item = 1
-    } else if (player1.num > player2.num) {
+    } else if (player1.num > player2.num && match.value === undefined) {
         bot.sendMessage(chatId, `${player1.name} will attack first!`)
         player1.turnAtk = 1
         match.value = 1
-    } else if (player2.num > player1.num) {
+    } else if (player2.num > player1.num && match.value === undefined) {
         bot.sendMessage(chatId, `${player2.name} will attack first!`)
         player2.turnAtk = 1
         match.value = 1
@@ -118,7 +121,7 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
     let chatId = msg.chat.id
     // Functions Declaration - START //
     const restartGame = () => {
-        match.value = 0
+        match.value = undefined
         player1.life = 10
         player1.id = undefined
         player1.item = 1
@@ -151,10 +154,10 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
     //Attack Function
     const randAttack = () => {
         fs.readFile('fileId.txt', function (err, data) {
-            if (err) throw err
             let lines = data.toString().split('\n')
             let randLine = lines[math.floor(math.random() * lines.length - 2)]
             bot.sendDocument(chatId, randLine)
+            if(err) console.log(randLine)
         })
     }
 
@@ -163,13 +166,13 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
             player1.turnAtk--
             player2.turnDef++
             randAttack()
-        } else if (msg.from.id === player1.id && player1.turnAtk === 0) {
+        } else if (msg.from.id === player1.id && player1.turnAtk <= 0) {
             bot.sendMessage(chatId, `${player1.name}, wait for your turn to attack!`)
         } else if (msg.from.id === player2.id && player2.turnAtk >= 1) {
             player2.turnAtk--
             player1.turnDef++
             randAttack()
-        } else if (msg.from.id === player2.id && player2.turnAtk === 0) {
+        } else if (msg.from.id === player2.id && player2.turnAtk <= 0) {
             bot.sendMessage(chatId, `${player2.name}, wait for your turn to attack!`)
         }
     }
@@ -201,8 +204,14 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
         }
         player.life = player.life - player.dano
         if (player.life <= 0) {
-            console.log(`${player.name} FAINTED`)
-            bot.sendMessage(chatId, `${player.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>`, {parse_mode: 'HTML'})
+            	match.value = 0
+            	console.log(`${player.name} FAINTED`)
+            	bot.sendMessage(chatId, `${player.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>`, {parse_mode: 'HTML'})
+            if(player.id === player1.id){
+                	bot.sendMessage(chatId, `Congratulations ${player2.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'}) 
+            	}else{
+                	bot.sendMessage(chatId, `Congratulations ${player1.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'}) 
+            	}
         } else {
             bot.sendMessage(chatId, ` ${dictDano[x]}\n${player.name} has ${player.life} HP!`, {parse_mode: 'HTML'})
         }
@@ -223,20 +232,21 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
             player1.turnAtk++
             defFunc(player1)
             console.log(`Player 1: ${player1.name} executou Defend. HP atual: ${player1.life}`)
-        } else if (msg.from.id === player1.id && player1.turnDef === 0) {
+        } else if (msg.from.id === player1.id && player1.turnDef <= 0) {
             bot.sendMessage(chatId, `${player1.name}, wait for your turn to defend!`)
         } else if (msg.from.id === player2.id && player2.turnDef >= 1) {
             player2.turnDef--
             player2.turnAtk++
             defFunc(player2)
             console.log(`Player 2: ${player2.name} executou Defend. HP atual: ${player2.life}`)
-        } else if (msg.from.id === player2.id && player2.turnDef === 0) {
+        } else if (msg.from.id === player2.id && player2.turnDef <= 0) {
             bot.sendMessage(chatId, `${player2.name}, wait for your turn to defend!`)
         }
     }
 
     //Item Function
     const msgItem = (player, j) => {
+        let id = player.id
         if (j === 4) {
             player.life -= 3
         }
@@ -255,8 +265,14 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
             player.life += j
         }
         if (player.life <= 0) {
+            match.value = 0
             console.log(`${player.name} FAINTED`)
             bot.sendMessage(chatId, `${itemDict[j]}\n${player.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>`, {parse_mode: 'HTML'})
+            if(player.id === player1.id){
+                bot.sendMessage(chatId, `Congratulations ${player2.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'}) 
+            }else{
+                bot.sendMessage(chatId, `Congratulations ${player1.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'}) 
+            }
         } else {
             bot.sendMessage(chatId, `${itemDict[j]}\nYour HP is ${player.life}.`, {parse_mode: 'HTML'})
         }
@@ -281,16 +297,21 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
     //Roll a dice
     let dice = 'Roll a Dice'
     if (msg.text.indexOf(dice) === 0) {
-        rollDice({player1, player2, match, msg, bot})
+	    if (match.value === 1) {
+		    bot.sendMessage(chatId, `<b>Sorry, ${msg.from.first_name}!</b>\nYou cannot roll a dice while a match is in progress`, {parse_mode: 'html'})                    
+	    }else if(match.value === 0){
+		    bot.sendMessage(chatId, `${msg.from.first_name}, the match has over. Tap Restart.`)    
+	    }else {
+            rollDice({player1, player2, match, msg, bot})
+	    }
     }
-
     //Restart
     let restart = 'Restart'
     let adminId = 318475027
     if (msg.text.indexOf(restart) === 0) {
         if (msg.from.id === adminId) {
             restartGame()
-        } else if ((player1.life >= 1) && (player2.life >= 1) && (player1.id !== undefined)) {
+        } else if (match.value === 1) {
             bot.sendMessage(chatId, `${msg.from.first_name}, you cannot Restart a game in progress!`)
         } else if ((player1.id === undefined) || (player2.id === undefined)) {
             bot.sendMessage(chatId, `${msg.from.first_name}, there is no match happening right now. Please roll a Dice to start!`)
@@ -306,7 +327,11 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
         } else if (msg.from.id !== player1.id && msg.from.id !== player2.id) {
             bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`)
         } else {
-            checkAtkTurn(player1, player2)
+            if(match.value === 0){
+                bot.sendMessage(chatId, `${msg.from.first_name}, the match has over. Tap Restart.`)
+            }else{
+            		checkAtkTurn(player1, player2)
+            }
             //	console.log(`Player 1 Atk: ${player1.turnAtk}`);
             //	console.log(`Player 2 Atk: ${player2.turnAtk}`);
         }
@@ -319,7 +344,11 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
         } else if (msg.from.id !== player1.id && msg.from.id !== player2.id) {
             bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`)
         } else {
-            checkDefTurn(player1, player2)
+            if(match.value === 0){
+                bot.sendMessage(chatId, `${msg.from.first_name}, the match has over. Tap Restart.`)
+            }else{
+            		checkDefTurn(player1, player2)
+            }
             // console.log(`Player 1 Def: ${player1.turnDef}`);
             // console.log(`Player 2 Def: ${player2.turnDef}`);
         }
@@ -327,43 +356,43 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
     //Use an Item
     let item = 'Use an Item'
     if (msg.text.indexOf(item) === 0) {
-        if (msg.from.id === player1.id && player1.turnAtk >= 1) {
-            if (player1.item === 1) {
-                itemFunc(player1)
-                console.log('Player 1 usou item')
-            } else {
-                bot.sendMessage(chatId, `${player1.name}, you've already used an item. You cannot use it twice, in the same match`)
-            }
-        } else if (msg.from.id === player1.id && player1.turnAtk <= 0 && match.value === 1) {
-            bot.sendMessage(chatId, `${player1.name}, you cannot use an item right now. Wait your attack turn!`)
-        }
-
-        if (msg.from.id === player2.id && player2.turnAtk >= 1) {
-            if (player2.item === 1) {
-                itemFunc(player2)
-                console.log('Player 2 usou item')
-            } else {
-                bot.sendMessage(chatId, `${player2.name}, you've already used an item. You cannot use it twice, in the same match`)
-            }
-        } else if (msg.from.id === player2.id && player2.turnAtk <= 0 && match.value === 1) {
-            bot.sendMessage(chatId, `${player2.name}, you cannot use an item right now. Wait your attack turn!`)
-        }
-
-        if ((player1.id === undefined) || (player2.id === undefined)) {
-            bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`)
-        } else if (msg.from.id !== player1.id && msg.from.id !== player2.id) {
-            bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`)
-        }
+	    if ((player1.id === undefined) || (player2.id === undefined)) {
+		    bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`)
+	    } else if (msg.from.id !== player1.id && msg.from.id !== player2.id) {
+		    bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`)
+	    } else if(match.value === 0){
+		    bot.sendMessage(chatId, `${msg.from.first_name}, the match has over. Tap Restart.`)
+	    }else{
+		    if (msg.from.id === player1.id && player1.turnAtk >= 1) {
+			    if (player1.item === 1) {
+				    itemFunc(player1)
+				    console.log('Player 1 usou item')
+			    } else {
+				    bot.sendMessage(chatId, `${player1.name}, you've already used an item. You cannot use it twice, in the same match`)
+			    }
+		    } else if (msg.from.id === player1.id && player1.turnAtk <= 0 && match.value === 1) {
+				    bot.sendMessage(chatId, `${player1.name}, you cannot use an item right now. Wait your attack turn!`)
+			    }
+		    if (msg.from.id === player2.id && player2.turnAtk >= 1) {
+			    if (player2.item === 1) {
+				    itemFunc(player2)
+				    console.log('Player 2 usou item')
+			    } else {
+				    bot.sendMessage(chatId, `${player2.name}, you've already used an item. You cannot use it twice, in the same match`)
+			    }
+		    } else if (msg.from.id === player2.id && player2.turnAtk <= 0 && match.value === 1) {
+			    bot.sendMessage(chatId, `${player2.name}, you cannot use an item right now. Wait your attack turn!`)
+		    }
+	    }
     }
 
 }
-
 const Player = {}
 
 //MAIN FUNCTION - START
 const main = ({token}) => {
     const bot = new TelegramBot(token, {polling: true})
-    let match = {value: 0}
+    let match = {value: undefined}
     let player1 = Object.create(Player)
     let player2 = Object.create(Player)
     bot.on('message', msg => onMessage({msg, bot, match, player1, player2}))
