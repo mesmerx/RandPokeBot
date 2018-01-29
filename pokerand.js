@@ -155,13 +155,14 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
     const randAttack = () => {
         fs.readFile('fileId.txt', function (err, data) {
             let lines = data.toString().split('\n')
-            let randLine = lines[math.floor(math.random() * lines.length - 2)]
+	    let max = lines.length - 2
+            let randLine = lines[math.floor(math.random() * max)]
             bot.sendDocument(chatId, randLine)
-            if(err) console.log(randLine)
+            if(err) throw err
         })
     }
 
-    const checkAtkTurn = () => {
+    const checkAtkTurn = (player1,player2) => {
         if (msg.from.id === player1.id && player1.turnAtk >= 1) {
             player1.turnAtk--
             player2.turnDef++
