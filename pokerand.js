@@ -34,6 +34,87 @@ const itemDict = {
     5: ['You found a Quick Claw and can attack twice!'],
 }
 
+const dictAttack = {
+    
+    0: ['Typhlosion used Flamethrower'],
+    1: ['Breloom used Energy Ball'],
+    2: ['Noctowl used Fly'],
+    3: ['Hydreigon used Tri-Attack'],
+    4: ['Shedinja used Confuse Ray'],
+    5: ['Cinccino used Tail Slap'],
+    6: ['Leavanny used Razor Leaf'],
+    7: ['Electrode used Explosion'],
+    8: ['Vulpix and Ninetales used Flamethrower'],
+    9: ['Eevee used Iron Tail'],
+    10:['Gallade used Close Combat'],
+    11:['Articuno used Ice Beam'],
+    12:['Glaceon used Blizzard'],
+    13:['Greninja used Water Shuriken'],
+    14:['Milotic used Water Pulse'],
+    15:['Marowak used Bonemerang'],
+    16:['Alakazam used Telekinesis'],
+    17:['Glameow used Shadow Claw'],
+    18:['Buizel used Water Pulse'],
+    19:['Pikachu used Volt Tackle'],
+    20:['Eevee used Trump Card'],
+    21:['Garbodor used Acid Spray'],
+    22:['Gyarados used Hyper Beam'],
+    23:['Eevee used Quick Attack'],
+    24:['Keldeo used Water Gun'],
+    25:['Vaporeon used Bubble'],
+    26:['Mewtwo used Swift'],
+    27:['Mewtwo used Shadow Ball'],
+    28:['Machamp used Brick Break'],
+    29:['Rayquaza used Ice Beam'],
+    30:['Pikachu used Quick Attack'],
+    31:['Lucario used Bone Rush'],
+    32:['Bulbasaur used Solar Beam'],
+    33:['Lucario used Metal Claw'],
+    34:['Rayquaza used Hyper Beam'],
+    35:['Volcanion used Steam Eruption'],
+    36:['Deoxys used Psycho Boost'],
+    37:['Slugma, Rapidash, Magmortar and Heatran used Flamethrower'],
+    38:['Rayquaza used Dragon Ascent'],
+    39:['Pikachu used Electric Ball'],
+    40:['Groudon used Hyper Beam'],
+    41:['Mega Charizard X used Dragon Claw'],
+    42:['Pikachu used Quick Attack'],
+    43:['Clefairy used Metronome'],
+    44:['Dewgong used Aurora Beam'],
+    45:['Magearna used Fleur Cannon'],
+    46:['Giratina used Stomp'],
+    47:['Magikarp used Splash'],
+    48:['Scizor used Metal Claw'],
+    49:['Charizard used Heat Wave'],
+    50:['Liepard used Shadow Ball'],
+    51:['Bisharp used Iron Head'],
+    52:['Golem used Rollout'],
+    53:['Gengar used Hypnosis'],
+    54:['Bayleef used Vine Whip'],
+    55:['Mightyena used Shadow Ball'],
+    56:['Ninetales used Fire Blast'],
+    57:['Mandibuzz used Shadow Ball'],
+    58:['Charizard used Flamethrower'],
+    59:['Espeon used Hidden Power'],
+    60:['Arceus used Hyper Beam'],
+    61:['Blastoise used Hydro Pump'],
+    62:['Mega Charizard X used Fire Blast'],
+    63:['Hoopa used Hyperspace Hole'],
+    64:['Scyther used Fury Cutter'],
+    65:['Greninja used Water Shuriken'],
+    66:['Lucario used Swords Dance'],
+    67:['Articuno used Ice Beam'],
+    68:['Mr.Mime used Refect'],
+    69:['Moltres used Flamethrower'],
+    70:['Greninja used Double Team'],
+    71:['Beedril used Twineedle'],
+    72:['Serperior used Dragon Tail'],
+    73:['Mew used Psycho Boost'],
+    74:['Hydreigon used Ice Beam'],
+    75:['Gengar used Hyper Beam'],
+    76:['Jolteon used Thunderbolt'],
+}
+
 
 const IntRand = (x, y) => {
     return math.randomInt(x, y)
@@ -155,9 +236,10 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
     const randAttack = () => {
         fs.readFile('fileId.txt', function (err, data) {
             let lines = data.toString().split('\n')
-	    let max = lines.length - 2
+								    let max = lines.length - 2
             let randLine = lines[math.floor(math.random() * max)]
-            bot.sendDocument(chatId, randLine)
+								    let i = lines.indexOf(randLine)
+            bot.sendDocument(chatId, randLine, {caption: `${dictAttack[i]}`})
             if(err) throw err
         })
     }
