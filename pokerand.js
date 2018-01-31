@@ -35,7 +35,7 @@ const itemDict = {
 }
 
 const dictAttack = {
-    
+
     0: ['Typhlosion used Flamethrower'],
     1: ['Breloom used Energy Ball'],
     2: ['Noctowl used Fly'],
@@ -46,73 +46,73 @@ const dictAttack = {
     7: ['Electrode used Explosion'],
     8: ['Vulpix and Ninetales used Flamethrower'],
     9: ['Eevee used Iron Tail'],
-    10:['Gallade used Close Combat'],
-    11:['Articuno used Ice Beam'],
-    12:['Glaceon used Blizzard'],
-    13:['Greninja used Water Shuriken'],
-    14:['Milotic used Water Pulse'],
-    15:['Marowak used Bonemerang'],
-    16:['Alakazam used Telekinesis'],
-    17:['Glameow used Shadow Claw'],
-    18:['Buizel used Water Pulse'],
-    19:['Pikachu used Volt Tackle'],
-    20:['Eevee used Trump Card'],
-    21:['Garbodor used Acid Spray'],
-    22:['Gyarados used Hyper Beam'],
-    23:['Eevee used Quick Attack'],
-    24:['Keldeo used Water Gun'],
-    25:['Vaporeon used Bubble'],
-    26:['Mewtwo used Swift'],
-    27:['Mewtwo used Shadow Ball'],
-    28:['Machamp used Brick Break'],
-    29:['Rayquaza used Ice Beam'],
-    30:['Pikachu used Quick Attack'],
-    31:['Lucario used Bone Rush'],
-    32:['Bulbasaur used Solar Beam'],
-    33:['Lucario used Metal Claw'],
-    34:['Rayquaza used Hyper Beam'],
-    35:['Volcanion used Steam Eruption'],
-    36:['Deoxys used Psycho Boost'],
-    37:['Slugma, Rapidash, Magmortar and Heatran used Flamethrower'],
-    38:['Rayquaza used Dragon Ascent'],
-    39:['Pikachu used Electric Ball'],
-    40:['Groudon used Hyper Beam'],
-    41:['Mega Charizard X used Dragon Claw'],
-    42:['Pikachu used Quick Attack'],
-    43:['Clefairy used Metronome'],
-    44:['Dewgong used Aurora Beam'],
-    45:['Magearna used Fleur Cannon'],
-    46:['Giratina used Stomp'],
-    47:['Magikarp used Splash'],
-    48:['Scizor used Metal Claw'],
-    49:['Charizard used Heat Wave'],
-    50:['Liepard used Shadow Ball'],
-    51:['Bisharp used Iron Head'],
-    52:['Golem used Rollout'],
-    53:['Gengar used Hypnosis'],
-    54:['Bayleef used Vine Whip'],
-    55:['Mightyena used Shadow Ball'],
-    56:['Ninetales used Fire Blast'],
-    57:['Mandibuzz used Shadow Ball'],
-    58:['Charizard used Flamethrower'],
-    59:['Espeon used Hidden Power'],
-    60:['Arceus used Hyper Beam'],
-    61:['Blastoise used Hydro Pump'],
-    62:['Mega Charizard X used Fire Blast'],
-    63:['Hoopa used Hyperspace Hole'],
-    64:['Scyther used Fury Cutter'],
-    65:['Greninja used Water Shuriken'],
-    66:['Lucario used Swords Dance'],
-    67:['Articuno used Ice Beam'],
-    68:['Mr.Mime used Refect'],
-    69:['Moltres used Flamethrower'],
-    70:['Greninja used Double Team'],
-    71:['Beedril used Twineedle'],
-    72:['Serperior used Dragon Tail'],
-    73:['Mew used Psycho Boost'],
-    74:['Hydreigon used Ice Beam'],
-    75:['Gengar used Hyper Beam'],
-    76:['Jolteon used Thunderbolt'],
+    10: ['Gallade used Close Combat'],
+    11: ['Articuno used Ice Beam'],
+    12: ['Glaceon used Blizzard'],
+    13: ['Greninja used Water Shuriken'],
+    14: ['Milotic used Water Pulse'],
+    15: ['Marowak used Bonemerang'],
+    16: ['Alakazam used Telekinesis'],
+    17: ['Glameow used Shadow Claw'],
+    18: ['Buizel used Water Pulse'],
+    19: ['Pikachu used Volt Tackle'],
+    20: ['Eevee used Trump Card'],
+    21: ['Garbodor used Acid Spray'],
+    22: ['Gyarados used Hyper Beam'],
+    23: ['Eevee used Quick Attack'],
+    24: ['Keldeo used Water Gun'],
+    25: ['Vaporeon used Bubble'],
+    26: ['Mewtwo used Swift'],
+    27: ['Mewtwo used Shadow Ball'],
+    28: ['Machamp used Brick Break'],
+    29: ['Rayquaza used Ice Beam'],
+    30: ['Pikachu used Quick Attack'],
+    31: ['Lucario used Bone Rush'],
+    32: ['Bulbasaur used Solar Beam'],
+    33: ['Lucario used Metal Claw'],
+    34: ['Rayquaza used Hyper Beam'],
+    35: ['Volcanion used Steam Eruption'],
+    36: ['Deoxys used Psycho Boost'],
+    37: ['Slugma, Rapidash, Magmortar and Heatran used Flamethrower'],
+    38: ['Rayquaza used Dragon Ascent'],
+    39: ['Pikachu used Electric Ball'],
+    40: ['Groudon used Hyper Beam'],
+    41: ['Mega Charizard X used Dragon Claw'],
+    42: ['Pikachu used Quick Attack'],
+    43: ['Clefairy used Metronome'],
+    44: ['Dewgong used Aurora Beam'],
+    45: ['Magearna used Fleur Cannon'],
+    46: ['Giratina used Stomp'],
+    47: ['Magikarp used Splash'],
+    48: ['Scizor used Metal Claw'],
+    49: ['Charizard used Heat Wave'],
+    50: ['Liepard used Shadow Ball'],
+    51: ['Bisharp used Iron Head'],
+    52: ['Golem used Rollout'],
+    53: ['Gengar used Hypnosis'],
+    54: ['Bayleef used Vine Whip'],
+    55: ['Mightyena used Shadow Ball'],
+    56: ['Ninetales used Fire Blast'],
+    57: ['Mandibuzz used Shadow Ball'],
+    58: ['Charizard used Flamethrower'],
+    59: ['Espeon used Hidden Power'],
+    60: ['Arceus used Hyper Beam'],
+    61: ['Blastoise used Hydro Pump'],
+    62: ['Mega Charizard X used Fire Blast'],
+    63: ['Hoopa used Hyperspace Hole'],
+    64: ['Scyther used Fury Cutter'],
+    65: ['Greninja used Water Shuriken'],
+    66: ['Lucario used Swords Dance'],
+    67: ['Articuno used Ice Beam'],
+    68: ['Mr.Mime used Refect'],
+    69: ['Moltres used Flamethrower'],
+    70: ['Greninja used Double Team'],
+    71: ['Beedril used Twineedle'],
+    72: ['Serperior used Dragon Tail'],
+    73: ['Mew used Psycho Boost'],
+    74: ['Hydreigon used Ice Beam'],
+    75: ['Gengar used Hyper Beam'],
+    76: ['Jolteon used Thunderbolt'],
 }
 
 
@@ -172,10 +172,9 @@ const rollDice = ({match, player1, player2, bot, msg}) => {
             player2.turnAtk = 0
             player2.turnDef = 0
             console.log(`Player 2 = ${player2.name} , ID = ${player2.id} , Dice: ${player2.num}`)
-        }else if (player2.id === msg.from.id)
-	    {
-        	bot.sendMessage(chatId, `${player2.name}, you cannot roll a dice again. Wait for another player!`)
-    	} 
+        } else if (player2.id === msg.from.id) {
+            bot.sendMessage(chatId, `${player2.name}, you cannot roll a dice again. Wait for another player!`)
+        }
     }
     if (player1.num === player2.num && player1.id !== undefined) {
         bot.sendMessage(chatId, 'Players got the same result. Please roll a dice again!')
@@ -236,15 +235,15 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
     const randAttack = () => {
         fs.readFile('fileId.txt', function (err, data) {
             let lines = data.toString().split('\n')
-								    let max = lines.length - 2
+            let max = lines.length - 2
             let randLine = lines[math.floor(math.random() * max)]
-								    let i = lines.indexOf(randLine)
+            let i = lines.indexOf(randLine)
             bot.sendDocument(chatId, randLine, {caption: `${dictAttack[i]}`})
-            if(err) throw err
+            if (err) throw err
         })
     }
 
-    const checkAtkTurn = (player1,player2) => {
+    const checkAtkTurn = (player1, player2) => {
         if (msg.from.id === player1.id && player1.turnAtk >= 1) {
             player1.turnAtk--
             player2.turnDef++
@@ -287,14 +286,14 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
         }
         player.life = player.life - player.dano
         if (player.life <= 0) {
-            	match.value = 0
-            	console.log(`${player.name} FAINTED`)
-            	bot.sendMessage(chatId, `${player.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>`, {parse_mode: 'HTML'})
-            if(player.id === player1.id){
-                	bot.sendMessage(chatId, `Congratulations ${player2.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'}) 
-            	}else{
-                	bot.sendMessage(chatId, `Congratulations ${player1.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'}) 
-            	}
+            match.value = 0
+            console.log(`${player.name} FAINTED`)
+            bot.sendMessage(chatId, `${player.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>`, {parse_mode: 'HTML'})
+            if (player.id === player1.id) {
+                bot.sendMessage(chatId, `Congratulations ${player2.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'})
+            } else {
+                bot.sendMessage(chatId, `Congratulations ${player1.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'})
+            }
         } else {
             bot.sendMessage(chatId, ` ${dictDano[x]}\n${player.name} has ${player.life} HP!`, {parse_mode: 'HTML'})
         }
@@ -329,7 +328,6 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
 
     //Item Function
     const msgItem = (player, j) => {
-        let id = player.id
         if (j === 4) {
             player.life -= 3
         }
@@ -351,10 +349,10 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
             match.value = 0
             console.log(`${player.name} FAINTED`)
             bot.sendMessage(chatId, `${itemDict[j]}\n${player.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>`, {parse_mode: 'HTML'})
-            if(player.id === player1.id){
-                bot.sendMessage(chatId, `Congratulations ${player2.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'}) 
-            }else{
-                bot.sendMessage(chatId, `Congratulations ${player1.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'}) 
+            if (player.id === player1.id) {
+                bot.sendMessage(chatId, `Congratulations ${player2.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'})
+            } else {
+                bot.sendMessage(chatId, `Congratulations ${player1.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'})
             }
         } else {
             bot.sendMessage(chatId, `${itemDict[j]}\nYour HP is ${player.life}.`, {parse_mode: 'HTML'})
@@ -380,13 +378,13 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
     //Roll a dice
     let dice = 'Roll a Dice'
     if (msg.text.indexOf(dice) === 0) {
-	    if (match.value === 1) {
-		    bot.sendMessage(chatId, `<b>Sorry, ${msg.from.first_name}!</b>\nYou cannot roll a dice while a match is in progress`, {parse_mode: 'html'})                    
-	    }else if(match.value === 0){
-		    bot.sendMessage(chatId, `${msg.from.first_name}, the match has over. Tap Restart.`)    
-	    }else {
+        if (match.value === 1) {
+            bot.sendMessage(chatId, `<b>Sorry, ${msg.from.first_name}!</b>\nYou cannot roll a dice while a match is in progress`, {parse_mode: 'html'})
+        } else if (match.value === 0) {
+            bot.sendMessage(chatId, `${msg.from.first_name}, the match has over. Tap Restart.`)
+        } else {
             rollDice({player1, player2, match, msg, bot})
-	    }
+        }
     }
     //Restart
     let restart = 'Restart'
@@ -410,10 +408,10 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
         } else if (msg.from.id !== player1.id && msg.from.id !== player2.id) {
             bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`)
         } else {
-            if(match.value === 0){
+            if (match.value === 0) {
                 bot.sendMessage(chatId, `${msg.from.first_name}, the match has over. Tap Restart.`)
-            }else{
-            		checkAtkTurn(player1, player2)
+            } else {
+                checkAtkTurn(player1, player2)
             }
             //	console.log(`Player 1 Atk: ${player1.turnAtk}`);
             //	console.log(`Player 2 Atk: ${player2.turnAtk}`);
@@ -427,10 +425,10 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
         } else if (msg.from.id !== player1.id && msg.from.id !== player2.id) {
             bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`)
         } else {
-            if(match.value === 0){
+            if (match.value === 0) {
                 bot.sendMessage(chatId, `${msg.from.first_name}, the match has over. Tap Restart.`)
-            }else{
-            		checkDefTurn(player1, player2)
+            } else {
+                checkDefTurn(player1, player2)
             }
             // console.log(`Player 1 Def: ${player1.turnDef}`);
             // console.log(`Player 2 Def: ${player2.turnDef}`);
@@ -439,34 +437,34 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
     //Use an Item
     let item = 'Use an Item'
     if (msg.text.indexOf(item) === 0) {
-	    if ((player1.id === undefined) || (player2.id === undefined)) {
-		    bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`)
-	    } else if (msg.from.id !== player1.id && msg.from.id !== player2.id) {
-		    bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`)
-	    } else if(match.value === 0){
-		    bot.sendMessage(chatId, `${msg.from.first_name}, the match has over. Tap Restart.`)
-	    }else{
-		    if (msg.from.id === player1.id && player1.turnAtk >= 1) {
-			    if (player1.item === 1) {
-				    itemFunc(player1)
-				    console.log('Player 1 usou item')
-			    } else {
-				    bot.sendMessage(chatId, `${player1.name}, you've already used an item. You cannot use it twice, in the same match`)
-			    }
-		    } else if (msg.from.id === player1.id && player1.turnAtk <= 0 && match.value === 1) {
-				    bot.sendMessage(chatId, `${player1.name}, you cannot use an item right now. Wait your attack turn!`)
-			    }
-		    if (msg.from.id === player2.id && player2.turnAtk >= 1) {
-			    if (player2.item === 1) {
-				    itemFunc(player2)
-				    console.log('Player 2 usou item')
-			    } else {
-				    bot.sendMessage(chatId, `${player2.name}, you've already used an item. You cannot use it twice, in the same match`)
-			    }
-		    } else if (msg.from.id === player2.id && player2.turnAtk <= 0 && match.value === 1) {
-			    bot.sendMessage(chatId, `${player2.name}, you cannot use an item right now. Wait your attack turn!`)
-		    }
-	    }
+        if ((player1.id === undefined) || (player2.id === undefined)) {
+            bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`)
+        } else if (msg.from.id !== player1.id && msg.from.id !== player2.id) {
+            bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`)
+        } else if (match.value === 0) {
+            bot.sendMessage(chatId, `${msg.from.first_name}, the match has over. Tap Restart.`)
+        } else {
+            if (msg.from.id === player1.id && player1.turnAtk >= 1) {
+                if (player1.item === 1) {
+                    itemFunc(player1)
+                    console.log('Player 1 usou item')
+                } else {
+                    bot.sendMessage(chatId, `${player1.name}, you've already used an item. You cannot use it twice, in the same match`)
+                }
+            } else if (msg.from.id === player1.id && player1.turnAtk <= 0 && match.value === 1) {
+                bot.sendMessage(chatId, `${player1.name}, you cannot use an item right now. Wait your attack turn!`)
+            }
+            if (msg.from.id === player2.id && player2.turnAtk >= 1) {
+                if (player2.item === 1) {
+                    itemFunc(player2)
+                    console.log('Player 2 usou item')
+                } else {
+                    bot.sendMessage(chatId, `${player2.name}, you've already used an item. You cannot use it twice, in the same match`)
+                }
+            } else if (msg.from.id === player2.id && player2.turnAtk <= 0 && match.value === 1) {
+                bot.sendMessage(chatId, `${player2.name}, you cannot use an item right now. Wait your attack turn!`)
+            }
+        }
     }
 
 }
