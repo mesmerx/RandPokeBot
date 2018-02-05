@@ -104,7 +104,7 @@ const dictAttack = {
     65: ['Greninja used Water Shuriken'],
     66: ['Lucario used Swords Dance'],
     67: ['Articuno used Ice Beam'],
-    68: ['Mr.Mime used Refect'],
+    68: ['Mr. Mime used Reflect'],
     69: ['Moltres used Flamethrower'],
     70: ['Greninja used Double Team'],
     71: ['Beedril used Twineedle'],
@@ -113,6 +113,20 @@ const dictAttack = {
     74: ['Hydreigon used Ice Beam'],
     75: ['Gengar used Hyper Beam'],
     76: ['Jolteon used Thunderbolt'],
+    77: ['Lucario used Aura Sphere'],
+    78: ['Infernape used Flare Blitz'],
+    79: ['Landorus used Extrasensory'],
+    80: ['Gliscor used X-Scissor'],
+    81: ['Venusaur used Razor Leaf'],
+    82: ['Noivern used Air Slash'],
+    83: ['Galvantula used Electro Web'],
+    84: ['Yanmega used Sonic Boom'],
+    85: ['Sawsbuck used Horn Leech'],
+    86: ['Dragonite used Hyper Beam'],
+    87: ['Flygon used Aerial Ace'],
+    88: ['Chimecho used Uproar'],
+    89: ['Nidoking used Thunderbolt'],
+ 
 }
 
 
@@ -245,7 +259,7 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
 
     const checkAtkTurn = (player1, player2) => {
         if (msg.from.id === player1.id && player1.turnAtk >= 1) {
-            player1.turnAtk--
+								    player1.turnAtk--
             player2.turnDef++
             randAttack()
         } else if (msg.from.id === player1.id && player1.turnAtk <= 0) {
@@ -371,13 +385,13 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
     //Damage array and Dict Damage
     //Welcome msg and Menu
     const welcome = '/start'
-    if (msg.text.indexOf(welcome) === 0) {
+    if (msg.text === welcome) {
         bot.sendMessage(chatId, `Hello,<b> ${msg.from.first_name}!</b>\nWelcome to PokeRand Game\nTap Roll a Dice to start`, mainKeyboard)
     }
 
     //Roll a dice
     let dice = 'Roll a Dice'
-    if (msg.text.indexOf(dice) === 0) {
+    if (msg.text === dice) {
         if (match.value === 1) {
             bot.sendMessage(chatId, `<b>Sorry, ${msg.from.first_name}!</b>\nYou cannot roll a dice while a match is in progress`, {parse_mode: 'html'})
         } else if (match.value === 0) {
@@ -389,7 +403,7 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
     //Restart
     let restart = 'Restart'
     let adminId = 318475027
-    if (msg.text.indexOf(restart) === 0) {
+    if (msg.text === restart) {
         if (msg.from.id === adminId) {
             restartGame()
         } else if (match.value === 1) {
@@ -402,7 +416,7 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
     }
     //Attack
     const atk = 'Attack'
-    if (msg.text.indexOf(atk) === 0) {
+    if (msg.text === atk) {
         if ((player1.id === undefined) || (player2.id === undefined)) {
             bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`)
         } else if (msg.from.id !== player1.id && msg.from.id !== player2.id) {
@@ -411,15 +425,16 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
             if (match.value === 0) {
                 bot.sendMessage(chatId, `${msg.from.first_name}, the match has over. Tap Restart.`)
             } else {
-                checkAtkTurn(player1, player2)
+                checkAtkTurn(player1,player2)
             }
+            
             //	console.log(`Player 1 Atk: ${player1.turnAtk}`);
             //	console.log(`Player 2 Atk: ${player2.turnAtk}`);
         }
     }
     //Defend
     let def = 'Defend'
-    if (msg.text.indexOf(def) === 0) {
+    if (msg.text === def) {
         if ((player1.id === undefined) || (player2.id === undefined)) {
             bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`)
         } else if (msg.from.id !== player1.id && msg.from.id !== player2.id) {
@@ -436,7 +451,7 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
     }
     //Use an Item
     let item = 'Use an Item'
-    if (msg.text.indexOf(item) === 0) {
+    if (msg.text === item) {
         if ((player1.id === undefined) || (player2.id === undefined)) {
             bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`)
         } else if (msg.from.id !== player1.id && msg.from.id !== player2.id) {
