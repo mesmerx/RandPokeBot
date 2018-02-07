@@ -1,4 +1,3 @@
-Bert:4
-Mesmer:7
-Danny:10
-Fulano:3
+1: Bert
+1: Danny
+1: nanato

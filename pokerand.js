@@ -1,13 +1,16 @@
 const math = require('mathjs')
 const fs = require('fs')
+const naturalSort = require('node-natural-sort')
 const TelegramBot = require('node-telegram-bot-api')
 
 const mainKeyboard = {
     reply_markup: {
         keyboard: [
-            ['Attack', 'Defend'],
-            ['Use an Item', 'Roll a Dice'],
-            ['Restart'],
+            ['\u2694 Attack', '\ud83d\udee1 Defend'],
+            ['\ud83c\udf81 Use an Item', 
+								    '\ud83c\udfb2 Roll a Dice'],
+								    ['\ud83c\udfc6 Ranking'],        
+            ['\ud83d\udd04 Restart'],
         ]
     }, parse_mode: 'HTML',
 }
@@ -231,20 +234,58 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
         bot.sendMessage(chatId, 'Game restarted! Please ROLL A DICE.')
     }
 
-    //Rank Function - not deployed yet
-    /*
-    const writeRank = () => {
-        if (player1.life <= 0) {
-            fs.writeFile('rank.txt', `${player2.name}\n`, {flag: 'a'}, function (err) {
-                if (err) throw err
-            })
-        } else if (player2.life <= 0) {
-            fs.writeFile('rank.txt', `${player1.name}\n`, {flag: 'a'}, function (err) {
-                if (err) throw err
-            })
-        }
+    //Rank Function 
+    const writeRank = (player) => {            
+        fs.readFile('rank.txt', function(err, data){
+            if(err) throw err 
+            let user = player.name
+            let reg = '[0-9]?([0-9])?([0-9])'
+            let arr = data.toString().split('\n')
+            if(arr.toString().match(user)){
+                user = new RegExp(`${reg}: ${user}`, 'g')
+                let a = arr.toString().match(user)
+                a = a.toString().split('[').join('')
+                let n = a.replace(/\d+/, function(n){ return ++n })
+                let result = data.toString().replace(user, n)
+                fs.writeFile('rank.txt', result, function (err) {
+                    if (err) return console.log(err)
+                });
+            }else{
+                fs.writeFile('rank.txt', `1: ${player.name}`, {flag: 'a'}, function (err) {
+                    if (err) return console.log(err)
+                });
+            }
+        });
     }
-    */
+    const showRank = () => {
+        fs.readFile('rank.txt', function(err,data){
+            let arr = data.toString().split('\n')
+								    arr = arr.sort(naturalSort({order: 'DESC'}))
+								    let str = ''
+								    let score, name;
+								    
+								    for(let i=0;i<arr.length-1;i++){
+                if(i === 0){
+																  name = `\ud83e\udd47 ${arr[0].match(/\w+$/)}`
+																  score = arr[0].match(/\d+/)
+															   str = `${str}${name} : ${score}\n`  
+                }else if(i === 1){
+																  name = `\ud83e\udd48 ${arr[1].match(/\w+$/)}`
+																  score = arr[1].match(/\d+/)
+															   str = `${str}${name} : ${score}\n`  
+                }else if(i === 2){
+																  name = `\ud83e\udd49 ${arr[2].match(/\w+$/)}`
+																  score = arr[2].match(/\d+/)
+															   str = `${str}${name} : ${score}\n`  
+                }else{
+                    score = arr[i].match(/\d+/)
+                    name = ` ${i+1}. ${arr[i].match(/\w+$/)}`
+                    str = `${str}${name} : ${score}\n` 
+                }
+            }
+								    bot.sendMessage(chatId, `Ranking:\n\n${str}`, {parse_mode: 'HTML'})
+        });
+    }    
     //Attack Function
     const randAttack = () => {
         fs.readFile('fileId.txt', function (err, data) {
@@ -289,11 +330,9 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
             if (msg.from.id === player1.id) {
                 player1.turnAtk++
                 player2.turnAtk--
-                //	console.log(`Player 1 usou COUNTER. tem ATK: ${player1.turnAtk} e P2 tem ATK: ${player2.turnAtk}`);
             } else {
                 player2.turnAtk++
                 player1.turnAtk--
-                //	console.log(`Player 2 usou COUNTER. tem ATK: ${player2.turnAtk} e P1 tem ATK: ${player1.turnAtk}`);
             }
         } else {
             player.dano = x
@@ -305,8 +344,10 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
             bot.sendMessage(chatId, `${player.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>`, {parse_mode: 'HTML'})
             if (player.id === player1.id) {
                 bot.sendMessage(chatId, `Congratulations ${player2.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'})
+                writeRank(player2)
             } else {
                 bot.sendMessage(chatId, `Congratulations ${player1.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'})
+                writeRank(player1)
             }
         } else {
             bot.sendMessage(chatId, ` ${dictDano[x]}\n${player.name} has ${player.life} HP!`, {parse_mode: 'HTML'})
@@ -365,8 +406,10 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
             bot.sendMessage(chatId, `${itemDict[j]}\n${player.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>`, {parse_mode: 'HTML'})
             if (player.id === player1.id) {
                 bot.sendMessage(chatId, `Congratulations ${player2.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'})
+                writeRank(player2)
             } else {
                 bot.sendMessage(chatId, `Congratulations ${player1.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'})
+                writeRank(player1)
             }
         } else {
             bot.sendMessage(chatId, `${itemDict[j]}\nYour HP is ${player.life}.`, {parse_mode: 'HTML'})
@@ -385,12 +428,17 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
     //Damage array and Dict Damage
     //Welcome msg and Menu
     const welcome = '/start'
-    if (msg.text === welcome) {
+    const welcome2= '/start@Bertinnnbot'
+    if (msg.text === welcome || msg.text === welcome2) {
         bot.sendMessage(chatId, `Hello,<b> ${msg.from.first_name}!</b>\nWelcome to PokeRand Game\nTap Roll a Dice to start`, mainKeyboard)
     }
-
+    //Ranking
+    const ranking = '\ud83c\udfc6 Ranking'
+    if (msg.text === ranking) {
+        showRank();
+    }   
     //Roll a dice
-    let dice = 'Roll a Dice'
+    let dice = '\ud83c\udfb2 Roll a Dice'
     if (msg.text === dice) {
         if (match.value === 1) {
             bot.sendMessage(chatId, `<b>Sorry, ${msg.from.first_name}!</b>\nYou cannot roll a dice while a match is in progress`, {parse_mode: 'html'})
@@ -401,7 +449,7 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
         }
     }
     //Restart
-    let restart = 'Restart'
+    let restart = '\ud83d\udd04 Restart'
     let adminId = 318475027
     if (msg.text === restart) {
         if (msg.from.id === adminId) {
@@ -415,7 +463,7 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
         }
     }
     //Attack
-    const atk = 'Attack'
+    const atk = '\u2694 Attack'
     if (msg.text === atk) {
         if ((player1.id === undefined) || (player2.id === undefined)) {
             bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`)
@@ -433,7 +481,7 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
         }
     }
     //Defend
-    let def = 'Defend'
+    let def = '\ud83d\udee1 Defend'
     if (msg.text === def) {
         if ((player1.id === undefined) || (player2.id === undefined)) {
             bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`)
@@ -450,7 +498,7 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
         }
     }
     //Use an Item
-    let item = 'Use an Item'
+    let item = '\ud83c\udf81 Use an Item'
     if (msg.text === item) {
         if ((player1.id === undefined) || (player2.id === undefined)) {
             bot.sendMessage(chatId, `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`)
