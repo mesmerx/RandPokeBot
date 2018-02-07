@@ -239,19 +239,21 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
         fs.readFile('rank.txt', function(err, data){
             if(err) throw err 
             let user = player.name
+								    let hp = player.life
             let reg = '[0-9]?([0-9])?([0-9])'
             let arr = data.toString().split('\n')
             if(arr.toString().match(user)){
                 user = new RegExp(`${reg}: ${user}`, 'g')
                 let a = arr.toString().match(user)
                 a = a.toString().split('[').join('')
-                let n = a.replace(/\d+/, function(n){ return ++n })
-                let result = data.toString().replace(user, n)
+                let n = a.replace(/\d+/, function(n){return hp+parseInt(n) })
+                
+                let result = data.toString().replace(user,n)
                 fs.writeFile('rank.txt', result, function (err) {
                     if (err) return console.log(err)
                 });
             }else{
-                fs.writeFile('rank.txt', `1: ${player.name}`, {flag: 'a'}, function (err) {
+                fs.appendFile('rank.txt', `\n${player.life}: ${player.name}`, function (err) {
                     if (err) return console.log(err)
                 });
             }
@@ -280,10 +282,11 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
                 }else{
                     score = arr[i].match(/\d+/)
                     name = ` ${i+1}. ${arr[i].match(/\w+$/)}`
-                    str = `${str}${name} : ${score}\n` 
-                }
+                    str = `${str}${name} : ${score}\n`
+                } 
             }
-								    bot.sendMessage(chatId, `Ranking:\n\n${str}`, {parse_mode: 'HTML'})
+								    
+								    bot.sendMessage(chatId, `Ranking:\n\n${str}`)
         });
     }    
     //Attack Function
