@@ -1,3 +1,5 @@
-1: Bert
-1: Danny
-1: nanato
+24: Bert (318475027)
+14: Danny (18102943)
+11: nanato (54802572)
+1: José da Silva (53392377)
+5: JoÃo Zé (533923287)
