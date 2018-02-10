@@ -2,7 +2,7 @@ const math = require('mathjs')
 const fs = require('fs')
 const naturalSort = require('node-natural-sort')
 const TelegramBot = require('node-telegram-bot-api')
-
+let loser = {name: undefined, id: undefined}
 const mainKeyboard = {
     reply_markup: {
         keyboard: [
@@ -155,15 +155,17 @@ const checkPlayer = ({player1, player2, msg, bot}) => {
     if (player1.id === undefined) {
         player1.id = msg.from.id
         player1.name = msg.from.first_name
+        player1.username = msg.from.username
     } else if (player2.id === undefined && player1.id !== msg.from.id) {
         player2.id = msg.from.id
         player2.name = msg.from.first_name
+        player2.username = msg.from.username
     } else if ((msg.from.id !== player1.id) && (msg.from.id !== player2.id)) {
         bot.sendMessage(chatId, 'There are already two players in the game. Please, wait until the current match is over!')
     }
 }
 
-const rollDice = ({match, player1, player2, bot, msg}) => {
+const rollDice = ({match, player1, player2, bot, msg, writeRank}) => {
     if (match.value === 1) {
         bot.sendMessage(chatId, `<b>Sorry, ${msg.from.first_name}!</b>\nYou cannot roll a dice while a match is in progress`, {parse_mode: 'html'})
         return null
@@ -177,6 +179,7 @@ const rollDice = ({match, player1, player2, bot, msg}) => {
         player1.item = 1
         player1.turnAtk = 0
         player1.turnDef = 0
+        writeRank(player1)
         console.log(`Player 1 = ${player1.name} , ID = ${player1.id} , Dice: ${player1.num}`)
     } else if (player1.id === msg.from.id) {
         bot.sendMessage(chatId, `${player1.name}, you cannot roll a dice again. Wait for another player!`)
@@ -188,6 +191,7 @@ const rollDice = ({match, player1, player2, bot, msg}) => {
             player2.item = 1
             player2.turnAtk = 0
             player2.turnDef = 0
+								    writeRank(player2)
             console.log(`Player 2 = ${player2.name} , ID = ${player2.id} , Dice: ${player2.num}`)
         } else if (player2.id === msg.from.id) {
             bot.sendMessage(chatId, `${player2.name}, you cannot roll a dice again. Wait for another player!`)
@@ -203,6 +207,7 @@ const rollDice = ({match, player1, player2, bot, msg}) => {
         player2.turnAtk = 0
         player2.turnDef = 0
         player2.item = 1
+        match.value = 0
     } else if (player1.num > player2.num && match.value === undefined) {
         bot.sendMessage(chatId, `${player1.name} will attack first!`)
         player1.turnAtk = 1
@@ -219,48 +224,63 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
     // Functions Declaration - START //
     const restartGame = () => {
         match.value = undefined
+        loser.id = undefined
+        loser.name = undefined
         player1.life = 10
         player1.id = undefined
         player1.item = 1
         player1.num = undefined
         player1.turnAtk = 0
         player1.turnDef = 0
+        player1.statAtk = undefined
+        player1.statCount = 0
         player2.life = 10
         player2.id = undefined
         player2.item = 1
         player2.num = undefined
         player2.turnAtk = 0
         player2.turnDef = 0
+        player2.statAtk = undefined
+        player2.statCount = 0
         bot.sendMessage(chatId, 'Game restarted! Please ROLL A DICE.')
     }
 
     //Rank Function 
-    const writeRank = (player) => {            
-        fs.readFile('rank.txt', function(err, data){
+    const writeRank = (player,loser) => { 
+								
+        fs.readfile('rank.txt', function(err, data){
             if(err) throw err 
-            let user = player.name
-								    let hp = player.life
-								    let id = player.id
-            let reg = '[0-9]?([0-9])?([0-9])'
             let arr = data.toString().split('\n')
-            if(arr.toString().match(`(${id})`)){
-								     if(arr.toString().match(user)){
-																    user = new RegExp(`${reg}: ${user}`, 'g')
-                    let a = arr.toString().match(user)
-                    a = a.toString().split('[').join('')
-                    let n = a.replace(/\d+/, function(n){return hp+parseInt(n) })
-                
-                    let result = data.toString().replace(user,n)
+								    if(arr.toString().match(`(${player.id})`)){
+								     if(loser != undefined){
+                    RegExp.escape = function(string) { return string.replace(/[-/\\^@!$*+?.()|[\]{}]/g, '\\$&')};
+                    let userWin = new RegExp(`\\{\\d+\\} \\|${RegExp.escape(player.name)}\\| \\- ${RegExp.escape(player.username)} \\(\\d+\\)`)
+                    let userLose = new RegExp(`\\{\\d+\\} \\|${RegExp.escape(loser.name)}\\| \\- ${RegExp.escape(loser.username)} \\(\\d+\\)`)
+                    let matchWin = arr.toString().match(userWin)
+                    let matchLose = arr.toString().match(userLose)
+                    console.log(arr.toString())
+                    console.log(`userLose: ${userLose}`)
+                    console.log(`userWin: ${userWin}`)
+                    console.log(`matchLose: ${matchLose}`)						
+                    console.log(`matchWin: ${matchWin}`)																																
+                    let scoreWin = matchWin.toString().replace(/\d+/, function(scoreWin){return player.life+parseInt(scoreWin) }) 
+                    let scoreLose = matchLose.toString().replace(/\d+/, function(scoreLose){return parseInt(scoreLose)-player.life })
+                    if(scoreLose < 0){scoreLose = 0}
+                    let result = data.toString().replace(userWin,scoreWin).replace(userLose,scoreLose)
                     fs.writeFile('rank.txt', result, function (err) {
                         if (err) return console.log(err)
                     });
-                }else{
-                    console.log(`user ${id} trocou nome para ${user}`)
                 }
             }else{
-                fs.appendFile('rank.txt', `${player.life}: ${player.name} (${player.id})\n`, function (err) {
-                    if (err) return console.log(err)
-                });
+                if(player.username === undefined){
+                    fs.appendFile('rank.txt', `{${player.life}} |${player.name}| - NoUserName (${player.id})\n`, function (err) {
+                        if (err) return console.log(err)
+                    });
+                }else{
+                    fs.appendFile('rank.txt', `{${player.life}} |${player.name}| - @${player.username} (${player.id})\n`, function (err) {
+																   if(err) return console.log(err)
+                    });
+                }
             }
         });
     }
@@ -269,41 +289,58 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
             let arr = data.toString().split('\n')
 								    arr = arr.sort(naturalSort({order: 'DESC'}))
 								    let str = ''
-								    let score, name;
-								    
+								    let score, name
+								    let regex = /\|.+\| - [\w@!]+/		
 								    for(let i=0;i<arr.length-1;i++){
                 if(i === 0){
-																  name = `\ud83e\udd47 ${arr[0].match(/[A-z√Å-√ ]+/)}`
+																  name = `\ud83e\udd47 ${arr[0].match(regex)}` 
 																  score = arr[0].match(/\d+/)
 																  str = `${str}${name} : <b>${score}</b>\n`
                 }else if(i === 1){
-																  name = `\ud83e\udd48 ${arr[1].match(/[A-z√Å-√ ]+/)}`
+																  name = `\ud83e\udd48 ${arr[1].match(regex)}`
 
 																  score = arr[1].match(/\d+/)
 															   str = `${str}${name} : <b>${score}</b>\n`  
                 }else if(i === 2){
-																  name = `\ud83e\udd49 ${arr[2].match(/[A-z√Å-√ ]+/)}`
+																  name = `\ud83e\udd49 ${arr[2].match(regex)}`
 
 																  score = arr[2].match(/\d+/)
 																  str = `${str}${name} : <b>${score}</b>\n`
                 }else{
                     score = arr[i].match(/\d+/)
-                    name = ` ${i+1}. ${arr[i].match(/[A-z√Å-√ ]+/)}`
+                    name = ` ${i+1}. ${arr[i].match(regex)}`
                     str = `${str}${name} : <b>${score}</b>\n`
                 } 
             }
-								    
+								    str = str.toString().split(/\|/).join('').split(/\|/).join('')
 								    bot.sendMessage(chatId, `${str}`,{parse_mode: 'html'})
         });
-    }    
+    }
+    //Status Function - Not deployed yet
+    /*
+    const statusFunc = (player,i) => {
+        //Sleep
+        if(i === 53){
+								  if(player.statAtk === undefined){
+                bot.sendMessage(chatId, `${player.name}, <b>Your Hypnosis has successful</b>, opponent will sleep by <b>two turns.</b>`, {parse_mode: 'html'})
+                player.turnAtk = 2
+                player.statAtk = 'sleep'
+                player.statCount = 2
+            }else{
+                bot.sendMessage(chatId, `Sorry, ${player.name}. Your opponent is already sleeping\nYour attack failed.`)
+            }
+        }
+    }
+				*/
     //Attack Function
-    const randAttack = () => {
+    const randAttack = (player) => {
         fs.readFile('fileId.txt', function (err, data) {
             let lines = data.toString().split('\n')
             let max = lines.length - 2
             let randLine = lines[math.floor(math.random() * max)]
             let i = lines.indexOf(randLine)
             bot.sendDocument(chatId, randLine, {caption: `${dictAttack[i]}`})
+								    //statusFunc(player,i)
             if (err) throw err
         })
     }
@@ -312,20 +349,20 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
         if (msg.from.id === player1.id && player1.turnAtk >= 1) {
 								    player1.turnAtk--
             player2.turnDef++
-            randAttack()
+            randAttack(player1)
         } else if (msg.from.id === player1.id && player1.turnAtk <= 0) {
             bot.sendMessage(chatId, `${player1.name}, wait for your turn to attack!`)
         } else if (msg.from.id === player2.id && player2.turnAtk >= 1) {
-            player2.turnAtk--
+								    player2.turnAtk--
             player1.turnDef++
-            randAttack()
+            randAttack(player2)
         } else if (msg.from.id === player2.id && player2.turnAtk <= 0) {
             bot.sendMessage(chatId, `${player2.name}, wait for your turn to attack!`)
         }
     }
     //Def Function
 
-    const msgDef = (player, x) => {
+    const msgDef = (player, x,loser) => {
         if (x === 5) {//FLINCH
             player.dano = 1
             if (msg.from.id === player1.id) {
@@ -354,45 +391,59 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
             bot.sendMessage(chatId, `${player.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>`, {parse_mode: 'HTML'})
             if (player.id === player1.id) {
                 bot.sendMessage(chatId, `Congratulations ${player2.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'})
-                writeRank(player2)
+                loser.name = player1.name
+                loser.id = player1.id
+                loser.username = player1.username
+                writeRank(player2,loser)
             } else {
                 bot.sendMessage(chatId, `Congratulations ${player1.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'})
-                writeRank(player1)
+                loser.name = player2.name
+                loser.id = player2.id
+                loser.username = player2.username
+                writeRank(player1,loser)
             }
         } else {
             bot.sendMessage(chatId, ` ${dictDano[x]}\n${player.name} has ${player.life} HP!`, {parse_mode: 'HTML'})
         }
     }
 
-    const defFunc = (player) => {
+    const defFunc = (player,loser) => {
         const n = IntRand(0, 37)
         let x = parseInt(arrayDano[n])
         if (player.life === undefined) {
             player.life = 10
         }
-        msgDef(player, x)
+        msgDef(player, x,loser)
     }
 
-    const checkDefTurn = () => {
+    const checkDefTurn = (player1,player2,loser) => {
         if (msg.from.id === player1.id && player1.turnDef >= 1) {
-            player1.turnDef--
-            player1.turnAtk++
-            defFunc(player1)
+								   if(player2.statCount === 2){
+                bot.sendMessage(chatId, `${player1.name}, wait for your turn to defend!`)
+            }else{
+                player1.turnDef--
+                player1.turnAtk++
+                defFunc(player1,loser)
+            }
             console.log(`Player 1: ${player1.name} executou Defend. HP atual: ${player1.life}`)
         } else if (msg.from.id === player1.id && player1.turnDef <= 0) {
             bot.sendMessage(chatId, `${player1.name}, wait for your turn to defend!`)
         } else if (msg.from.id === player2.id && player2.turnDef >= 1) {
-            player2.turnDef--
-            player2.turnAtk++
-            defFunc(player2)
-            console.log(`Player 2: ${player2.name} executou Defend. HP atual: ${player2.life}`)
+            if(player1.statCount === 2){
+                bot.sendMessage(chatId, `${player2.name}, wait for your turn to defend!`)
+            }else{
+								     player2.turnDef--
+                player2.turnAtk++
+                defFunc(player2,loser)
+            }
+								   console.log(`Player 2: ${player2.name} executou Defend. HP atual: ${player2.life}`)
         } else if (msg.from.id === player2.id && player2.turnDef <= 0) {
             bot.sendMessage(chatId, `${player2.name}, wait for your turn to defend!`)
         }
     }
 
     //Item Function
-    const msgItem = (player, j) => {
+    const msgItem = (player, j,loser) => {
         if (j === 4) {
             player.life -= 3
         }
@@ -416,22 +467,26 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
             bot.sendMessage(chatId, `${itemDict[j]}\n${player.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>`, {parse_mode: 'HTML'})
             if (player.id === player1.id) {
                 bot.sendMessage(chatId, `Congratulations ${player2.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'})
+                loser.name = player1.name
+                loser.id = player1.id
                 writeRank(player2)
             } else {
                 bot.sendMessage(chatId, `Congratulations ${player1.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'})
+                loser.name = player2.name
+                loser.id = player2.id
                 writeRank(player1)
             }
         } else {
             bot.sendMessage(chatId, `${itemDict[j]}\nYour HP is ${player.life}.`, {parse_mode: 'HTML'})
         }
     }
-    const itemFunc = (player) => {
+    const itemFunc = (player,loser) => {
         player.item -= 1
         if (player.life === undefined) {
             player.life = 10
         }
         let j = IntRand(0, 6)
-        msgItem(player, j)
+        msgItem(player, j,loser)
     }
     // Functions Declaration END //
 
@@ -441,6 +496,7 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
     const welcome2= '/start@Bertinnnbot'
     if (msg.text === welcome || msg.text === welcome2) {
         bot.sendMessage(chatId, `Hello,<b> ${msg.from.first_name}!</b>\nWelcome to PokeRand Game\nTap Roll a Dice to start`, mainKeyboard)
+        //writeRank(player1)
     }
     //Ranking
     const ranking = '\ud83c\udfc6 Ranking'
@@ -455,7 +511,7 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
         } else if (match.value === 0) {
             bot.sendMessage(chatId, `${msg.from.first_name}, the match has over. Tap Restart.`)
         } else {
-            rollDice({player1, player2, match, msg, bot})
+            rollDice({player1, player2, match, msg, bot, writeRank})
         }
     }
     //Restart
@@ -501,7 +557,7 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
             if (match.value === 0) {
                 bot.sendMessage(chatId, `${msg.from.first_name}, the match has over. Tap Restart.`)
             } else {
-                checkDefTurn(player1, player2)
+                checkDefTurn(player1, player2,loser)
             }
             // console.log(`Player 1 Def: ${player1.turnDef}`);
             // console.log(`Player 2 Def: ${player2.turnDef}`);
@@ -519,7 +575,7 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
         } else {
             if (msg.from.id === player1.id && player1.turnAtk >= 1) {
                 if (player1.item === 1) {
-                    itemFunc(player1)
+                    itemFunc(player1,loser)
                     console.log('Player 1 usou item')
                 } else {
                     bot.sendMessage(chatId, `${player1.name}, you've already used an item. You cannot use it twice, in the same match`)
@@ -529,7 +585,7 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
             }
             if (msg.from.id === player2.id && player2.turnAtk >= 1) {
                 if (player2.item === 1) {
-                    itemFunc(player2)
+                    itemFunc(player2,loser)
                     console.log('Player 2 usou item')
                 } else {
                     bot.sendMessage(chatId, `${player2.name}, you've already used an item. You cannot use it twice, in the same match`)
@@ -542,11 +598,10 @@ const onMessage = ({msg, bot, match, player1, player2}) => {
 
 }
 const Player = {}
-
 //MAIN FUNCTION - START
 const main = ({token}) => {
     const bot = new TelegramBot(token, {polling: true})
-    let match = {value: undefined}
+    let match = {value: undefined} 
     let player1 = Object.create(Player)
     let player2 = Object.create(Player)
     bot.on('message', msg => onMessage({msg, bot, match, player1, player2}))
