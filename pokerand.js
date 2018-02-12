@@ -318,34 +318,34 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
 																  name = `\ud83e\udd47 ${arr[0].match(regex)}`
 																  userName = `${arr[0].match(regUserName)}`
 																  userName = userName.toString().split('-').join('').split(' ').join('')
-																  userName = userName.toString().replace(/.+/ , function(userName) { if(userName !== 'NoUserName'){ userName = ` - @${userName}`}else{ userName = ` - ${userName}`} return userName })
+																  userName = userName.toString().replace(/.+/ , function(userName) { if(userName !== 'NoUserName'){ userName = ` - (${userName})`}else{ userName = ` - ${userName}`} return userName })
 																  score = arr[0].match(/\d+/)
 																  str = `${str}${name}${userName} : <b>${score}</b>\n`
                 }else if(i === 1){
 																  name = `\ud83e\udd48 ${arr[1].match(regex)}`
 																  userName = `${arr[1].match(regUserName)}`
 																  userName = userName.toString().split('-').join('').split(' ').join('')
-																  userName = userName.toString().replace(/.+/ , function(userName) { if(userName !== 'NoUserName'){ userName = ` - @${userName}`}else{ userName = ` - ${userName}`} return userName })
+																  userName = userName.toString().replace(/.+/ , function(userName) { if(userName !== 'NoUserName'){ userName = ` - (${userName})`}else{ userName = ` - ${userName}`} return userName })
 																  score = arr[1].match(/\d+/)
 															   str = `${str}${name}${userName} : <b>${score}</b>\n`  
                 }else if(i === 2){
 																  name = `\ud83e\udd49 ${arr[2].match(regex)}`
 																  userName = `${arr[2].match(regUserName)}`
 																  userName = userName.toString().split('-').join('').split(' ').join('')
-																  userName = userName.toString().replace(/.+/ , function(userName) { if(userName !== 'NoUserName'){ userName = ` - @${userName}`}else{ userName = ` - ${userName}`} return userName })
+																  userName = userName.toString().replace(/.+/ , function(userName) { if(userName !== 'NoUserName'){ userName = ` - (${userName})`}else{ userName = ` - ${userName}`} return userName })
 																  score = arr[2].match(/\d+/)
 																  str = `${str}${name}${userName} : <b>${score}</b>\n`
                 }else{                   
                     name = ` ${i+1}. ${arr[i].match(regex)}`
 																  userName = `${arr[i].match(regUserName)}`
 																  userName = userName.toString().split('-').join('').split(' ').join('')
-																  userName = userName.toString().replace(/.+/ , function(userName) { if(userName !== 'NoUserName'){ userName = ` - @${userName}`}else{ userName = ` - ${userName}`} return userName })
+																  userName = userName.toString().replace(/.+/ , function(userName) { if(userName !== 'NoUserName'){ userName = ` - (${userName})`}else{ userName = ` - ${userName}`} return userName })
                     score = arr[i].match(/\d+/)
 																  str = `${str}${name}${userName} : <b>${score}</b>\n`
                 } 
             }
 								    str = str.toString().split(/\|/).join('').split(/\|/).join('')
-								    bot.sendMessage(chatId, `${str}`,{parse_mode: 'html'})
+								    bot.sendMessage(chatId, `<b>Name - (username) : Score</b>\n${str}`,{parse_mode: 'html'})
         });
     }
     //Status Function - Not deployed yet
