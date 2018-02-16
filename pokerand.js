@@ -241,20 +241,23 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
         bot.sendMessage(chatId, 'Game restarted! Please ROLL A DICE.')
     }
     const CheckRankChanges = (player, loser, arr) => {
-        //If player name || username!=Ranking
+        //If player name || player username!=Ranking
         if(arr.toString().match(`\\|${player.name}\\|`) !== player.name || arr.toString().match(`${player.username}`) !== player.username){
             for(let i=0;i<arr.length;i++){
                 if(arr[i].match(`\\(${player.id}\\)`)){
                     let score = arr[i].match(/\{\d+\}/)
-																    arr[i] = `${score} |${player.name}| - ${player.username} (${player.id})`
+																    let match = arr[i].match(/\[\d+\/\d+\]/)
+																    arr[i] = `${score} |${player.name}| - ${player.username} (${player.id}) ${match}`
                 }
             }
         }
+        //If loser name || loser username != ranking
         if(arr.toString().match(`\\|${loser.name}\\|`) !== loser.name || arr.toString().match(`${loser.username}`) !== loser.username){
             for(let i=0;i<arr.length;i++){
                 if(arr[i].match(`\\(${loser.id}\\)`)){
                     let score = arr[i].match(/\{\d+\}/)
-																    arr[i] = `${score} |${loser.name}| - ${loser.username} (${loser.id})`
+																    let match = arr[i].match(/\[\d+\/\d+\]/)
+																    arr[i] = `${score} |${loser.name}| - ${loser.username} (${loser.id}) ${match}`
                 }
             }
         }
@@ -266,14 +269,16 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
             if(err) throw err 
             let arr = data.toString().split('\n')								    
 								    if(arr.toString().match(`\\(${player.id}\\)`)){
+								       if(player.username === undefined){
+																 player.username = 'NoUserName'}
 								      if(loser !== undefined){
 								        if(arr.toString().match(`\\(${loser.id}\\)`) && loser.username === undefined){ 
                         loser.username = 'NoUserName'
                     }
                     CheckRankChanges(player,loser,arr)
                     RegExp.escape = function(string) { return string.replace(/[-/\\^@!$*+?.()|[\]{}]/g, '\\$&')};
-                    let userWin = new RegExp(`\\{\\d+\\} \\|${RegExp.escape(player.name)}\\| \\- ${RegExp.escape(player.username)} \\(\\d+\\)`)
-                    let userLose = new RegExp(`\\{\\d+\\} \\|${RegExp.escape(loser.name)}\\| \\- ${RegExp.escape(loser.username)} \\(\\d+\\)`)															    								      
+                    let userWin = new RegExp(`\\{\\d+\\} \\|${RegExp.escape(player.name)}\\| \\- ${RegExp.escape(player.username)} \\(\\d+\\) \\[\\d+\\/\\d+\\]`)
+                    let userLose = new RegExp(`\\{\\d+\\} \\|${RegExp.escape(loser.name)}\\| \\- ${RegExp.escape(loser.username)} \\(\\d+\\) \\[\\d+\\/\\d+\\]`)															    								      
                     let matchWin = arr.toString().match(userWin)
                     let matchLose = arr.toString().match(userLose)
                     
@@ -286,7 +291,9 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
                     let scoreWin = matchWin.toString().replace(/\d+/, function(scoreWin){return player.life+parseInt(scoreWin) }) 
                     let scoreLose = matchLose.toString().replace(/\d+/, function(scoreLose){
                         if(matchLose.toString().match(/\d+/)-player.life <= 0){ return scoreLose = 0}else{ return parseInt(scoreLose)-player.life } })
-                    let result = arr.toString().replace(userWin,scoreWin).replace(userLose,scoreLose)
+																    let mCountWin = scoreWin.toString().replace(/(\d+)\//, function(fullMatch, mCountWin){return (Number(mCountWin)+1) + '/'}) 
+																    let mCountLose = scoreLose.toString().replace(/\/(\d+)/, function(fullMatch, mCountLose){return '/' + (Number(mCountLose)+1) })
+                    let result = arr.toString().replace(userWin,mCountWin).replace(userLose,mCountLose)																   
 																    result = result.split(',').join('\n')
                     fs.writeFile('rank.txt', result, function (err) {
                         if (err) return console.log(err)
@@ -294,11 +301,11 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
                 }
             }else{
                 if(player.username === undefined){
-                    fs.appendFile('rank.txt', `{${player.life}} |${player.name}| - NoUserName (${player.id})\n`, function (err) {
+                    fs.appendFile('rank.txt', `{${player.life}} |${player.name}| - NoUserName (${player.id}) [0/0]\n`, function (err) {
                         if (err) return console.log(err)
                     });
                 }else{
-                    fs.appendFile('rank.txt', `{${player.life}} |${player.name}| - ${player.username} (${player.id})\n`, function (err) {
+                    fs.appendFile('rank.txt', `{${player.life}} |${player.name}| - ${player.username} (${player.id}) [0/0]\n`, function (err) {
 																   if(err) return console.log(err)
                     });
                 }
@@ -310,9 +317,10 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
             let arr = data.toString().split('\n')
 								    arr = arr.sort(naturalSort({order: 'DESC'}))
 								    let str = ''
-								    let score, name, userName
+								    let score, name, userName, match
 								    let regex = /\|.+\|/
 								    let regUserName = /- \w+/
+								    let regMatch = /\[\d+\/\d+\]/
 								    for(let i=0;i<arr.length-1;i++){
                 if(i === 0){
 																  name = `\ud83e\udd47 ${arr[0].match(regex)}`
@@ -320,32 +328,36 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
 																  userName = userName.toString().split('-').join('').split(' ').join('')
 																  userName = userName.toString().replace(/.+/ , function(userName) { if(userName !== 'NoUserName'){ userName = ` - (${userName})`}else{ userName = ` - ${userName}`} return userName })
 																  score = arr[0].match(/\d+/)
-																  str = `${str}${name}${userName} : <b>${score}</b>\n`
+																  match = arr[0].match(regMatch)
+																  str = `${str}${name}${userName} : <b>${score} - ${match}</b>\n`
                 }else if(i === 1){
 																  name = `\ud83e\udd48 ${arr[1].match(regex)}`
 																  userName = `${arr[1].match(regUserName)}`
 																  userName = userName.toString().split('-').join('').split(' ').join('')
 																  userName = userName.toString().replace(/.+/ , function(userName) { if(userName !== 'NoUserName'){ userName = ` - (${userName})`}else{ userName = ` - ${userName}`} return userName })
 																  score = arr[1].match(/\d+/)
-															   str = `${str}${name}${userName} : <b>${score}</b>\n`  
+																  match = arr[1].match(regMatch)
+															   str = `${str}${name}${userName} : <b>${score} - ${match}</b>\n`  
                 }else if(i === 2){
 																  name = `\ud83e\udd49 ${arr[2].match(regex)}`
 																  userName = `${arr[2].match(regUserName)}`
 																  userName = userName.toString().split('-').join('').split(' ').join('')
 																  userName = userName.toString().replace(/.+/ , function(userName) { if(userName !== 'NoUserName'){ userName = ` - (${userName})`}else{ userName = ` - ${userName}`} return userName })
 																  score = arr[2].match(/\d+/)
-																  str = `${str}${name}${userName} : <b>${score}</b>\n`
+																  match = arr[2].match(regMatch)
+																  str = `${str}${name}${userName} : <b>${score} - ${match}</b>\n`
                 }else{                   
                     name = ` ${i+1}. ${arr[i].match(regex)}`
 																  userName = `${arr[i].match(regUserName)}`
 																  userName = userName.toString().split('-').join('').split(' ').join('')
 																  userName = userName.toString().replace(/.+/ , function(userName) { if(userName !== 'NoUserName'){ userName = ` - (${userName})`}else{ userName = ` - ${userName}`} return userName })
                     score = arr[i].match(/\d+/)
-																  str = `${str}${name}${userName} : <b>${score}</b>\n`
+																  match = arr[i].match(regMatch)
+																  str = `${str}${name}${userName} : <b>${score} - ${match}</b>\n`
                 } 
             }
 								    str = str.toString().split(/\|/).join('').split(/\|/).join('')
-								    bot.sendMessage(chatId, `<b>Name - (username) : Score</b>\n${str}`,{parse_mode: 'html'})
+								    bot.sendMessage(chatId, `<b>Name - (username) : Score - [W/L]</b>\n${str}`,{parse_mode: 'html'})
         });
     }
     //Status Function - Not deployed yet
@@ -530,20 +542,20 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
     const welcome2= '/start@Bertinnnbot'
     if (msg.text === welcome || msg.text === welcome2) {
         bot.sendMessage(chatId, `Hello,<b> ${msg.from.first_name}!</b>\nWelcome to PokeRand Game\nTap Roll a Dice to start`, mainKeyboard)}
-    /*
+    
     // Debug
     if(msg.text === '/debug'){
-        loser.name = 'João'
-        loser.id = 533923287
-        loser.username = undefined
+        loser.name = 'Bert'
+        loser.id = 318475027
+        loser.username = 'Bertinnn'
         player1.life = 2
-        player1.name = 'Bert\ud83c\udde7\ud83c\uddf7'
-        player1.username = 'Bertinnn'
-        player1.id = 318475027
+        player1.name = 'João'
+        player1.username = undefined
+        player1.id = 533923287
         console.log(player1)
         writeRank(player1, loser)
     }
-				*/
+				
     let adminId = 318475027
     if(msg.text === '/reset' && msg.from.id === adminId){ restartGame() }
     //Ranking
@@ -640,6 +652,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
             }
         }
     }
+
 
 }
 const Player = {}
