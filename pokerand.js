@@ -8,14 +8,13 @@ const mainKeyboard = {
             ['\u2694 Attack', '\ud83d\udee1 Defend'],
             ['\ud83c\udf81 Use an Item', 
 								    '\ud83c\udfb2 Roll a Dice'],
-								    ['\ud83c\udfc6 Ranking'],        
+								    ['\ud83c\udfc6 Ranking'],       
             ['\ud83d\udd04 Restart'],
         ]
     }, parse_mode: 'HTML',
 }
 
 const arrayDano = ['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '3', '3', '3', '4', '4', '6', '0', '0', '0', '0', '0', '0', '0', '0', '5', '5', '7', '7']
-
 const dictDano = {
     0: ['Your opponent missed the attack!'],
     1: ['It was effective! You lose 1 HP.'],
@@ -128,7 +127,39 @@ const dictAttack = {
     87: ['Flygon used Aerial Ace'],
     88: ['Chimecho used Uproar'],
     89: ['Nidoking used Thunderbolt'],
- 
+    90: ['Pikachu used Iron Tail'],
+    91: ['Zoroark used Ilusion'],
+    92: ['Zoroark used Throat Chop'],
+    93: ['Shuppet used Night Shade'],
+    94: ['Zorua used Scratch'],
+    95: ['Celebi used Synthesis'],
+    96: ['Bronzor used Iron Defense'],
+    97: ['Ninjasks used Shadow Ball'],
+    98: ['Tangrowth used Vine Whip'],
+    99: ['Suicune used Icy Wind'],
+    100: ['Entei used Flamethrower'],
+    101: ['Piplup used Water Gun'],
+    102: ['Entei used Flare Blitz'],
+    103: ['Mamoswine used Ice Shard'],
+    104: ['Zoroark used Shadow Claw'],
+    105: ['Mismagius used Psychic'],
+    106: ['Pikachu used Volt Tackle'],
+    107: ['Zoroark used Night Daze'],
+    108: ['Alakazam used Psybeam'],
+    109: ['Samurott used Sacred Sword'],
+    110: ['Dewgong used Ice Beam'],
+    111: ['Staraptor used Wing Attack'],
+    112: ['Ash-Greninja used Water Shuriken(Melee)'],
+    113: ['Hitmoncham used Mega Punch'],
+    114: ['Ampharos used Thunder Punch'],
+    115: ['Vanillish used Ice Beam'],
+    116: ['Weavile used Metal Claw'],
+    117: ['Ash-Greninja used Water Shuriken'],
+    118: ['Squirtle, Staryu and Starmie used Water Gun'],
+    119: ['Reuniclus used Shock Wave'],
+    120: ['Sceptile used Crush Claw'],
+    121: ['Mega-Alakazam used Psychic'],
+    122: ['Armaldo used Ancient Power']
 }
 
 
@@ -504,6 +535,8 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
             }
         } else {
             player.life += j
+								    if(player.life > 10)
+            {player.life =10}
         }
         if (player.life <= 0) {
             match.value = 0
@@ -542,9 +575,8 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
     const welcome2= '/start@Bertinnnbot'
     if (msg.text === welcome || msg.text === welcome2) {
         bot.sendMessage(chatId, `Hello,<b> ${msg.from.first_name}!</b>\nWelcome to PokeRand Game\nTap Roll a Dice to start`, mainKeyboard)}
-    
     // Debug
-    if(msg.text === '/debug'){
+    if(msg.text === '/debug' && msg.from.id === adminId){
         loser.name = 'Bert'
         loser.id = 318475027
         loser.username = 'Bertinnn'
@@ -569,7 +601,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
         if (match.value === 1) {
             bot.sendMessage(chatId, `<b>Sorry, ${msg.from.first_name}!</b>\nYou cannot roll a dice while a match is in progress`, {parse_mode: 'html'})
         } else if (match.value === 0) {
-            bot.sendMessage(chatId, `${msg.from.first_name}, the match has over. Tap Restart.`)
+            bot.sendMessage(chatId, `${msg.from.first_name}, the match is over. Tap Restart.`)
         } else {
             rollDice({player1, player2, match, msg, bot, writeRank})
         }
@@ -594,7 +626,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
             bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`)
         } else {
             if (match.value === 0) {
-                bot.sendMessage(chatId, `${msg.from.first_name}, the match has over. Tap Restart.`)
+                bot.sendMessage(chatId, `${msg.from.first_name}, the match is over. Tap Restart.`)
             } else {
                 checkAtkTurn(player1,player2)
             }
@@ -612,7 +644,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
             bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`)
         } else {
             if (match.value === 0) {
-                bot.sendMessage(chatId, `${msg.from.first_name}, the match has over. Tap Restart.`)
+                bot.sendMessage(chatId, `${msg.from.first_name}, the match is over. Tap Restart.`)
             } else {
                 checkDefTurn(player1, player2,loser)
             }
@@ -628,7 +660,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
         } else if (msg.from.id !== player1.id && msg.from.id !== player2.id) {
             bot.sendMessage(chatId, `${msg.from.first_name}, you're not playing. Please wait, until the current match is over!`)
         } else if (match.value === 0) {
-            bot.sendMessage(chatId, `${msg.from.first_name}, the match has over. Tap Restart.`)
+            bot.sendMessage(chatId, `${msg.from.first_name}, the match is over. Tap Restart.`)
         } else {
             if (msg.from.id === player1.id && player1.turnAtk >= 1) {
                 if (player1.item === 1) {
