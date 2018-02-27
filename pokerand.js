@@ -8,8 +8,8 @@ const mainKeyboard = {
             ['\u2694 Attack', '\ud83d\udee1 Defend'],
             ['\ud83c\udf81 Use an Item', 
 								    '\ud83c\udfb2 Roll a Dice'],
-								    ['\ud83c\udfc6 Ranking'],       
-            ['\ud83d\udd04 Restart'],
+								    //['\ud83c\udfc6 Ranking'],       
+            //['\ud83d\udd04 Restart'],
         ]
     }, parse_mode: 'HTML',
 }
@@ -195,7 +195,7 @@ const checkPlayer = ({player1, player2, msg, bot}) => {
     }
 }
 
-const rollDice = ({match, player1, player2, bot, msg, writeRank}) => {
+const rollDice = ({match, player1, player2, bot, msg, writeRank, restartGame}) => {
     if (match.value === 1) {
         bot.sendMessage(chatId, `<b>Sorry, ${msg.from.first_name}!</b>\nYou cannot roll a dice while a match is in progress`, {parse_mode: 'html'})
         return null
@@ -237,7 +237,8 @@ const rollDice = ({match, player1, player2, bot, msg, writeRank}) => {
         player2.turnAtk = 0
         player2.turnDef = 0
         player2.item = 1
-        match.value = 0
+        match.value = undefined
+        restartGame()
     } else if (player1.num > player2.num && match.value === undefined) {
         bot.sendMessage(chatId, `${player1.name} will attack first!`)
         player1.turnAtk = 1
@@ -270,6 +271,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
         player2.turnAtk = 0
         player2.turnDef = 0
         bot.sendMessage(chatId, 'Game restarted! Please ROLL A DICE.')
+        showRank()
     }
     const CheckRankChanges = (player, loser, arr) => {
         //If player name || player username!=Ranking
@@ -298,7 +300,10 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
         
         fs.readFile('rank.txt', function(err, data){
             if(err) throw err 
-            let arr = data.toString().split('\n')								    
+            let arr = data.toString().split('\n')		
+            console.log(`player = ${player}`)
+            console.log(`loser = ${loser}`)
+                    
 								    if(arr.toString().match(`\\(${player.id}\\)`)){
 								       if(player.username === undefined){
 																 player.username = 'NoUserName'}
@@ -307,6 +312,8 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
                         loser.username = 'NoUserName'
                     }
                     CheckRankChanges(player,loser,arr)
+                    console.log(`player = ${player}`)
+                    console.log(`loser = ${loser}`)
                     RegExp.escape = function(string) { return string.replace(/[-/\\^@!$*+?.()|[\]{}]/g, '\\$&')};
                     let userWin = new RegExp(`\\{\\d+\\} \\|${RegExp.escape(player.name)}\\| \\- ${RegExp.escape(player.username)} \\(\\d+\\) \\[\\d+\\/\\d+\\]`)
                     let userLose = new RegExp(`\\{\\d+\\} \\|${RegExp.escape(loser.name)}\\| \\- ${RegExp.escape(loser.username)} \\(\\d+\\) \\[\\d+\\/\\d+\\]`)															    								      
@@ -388,8 +395,12 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
                 } 
             }
 								    str = str.toString().split(/\|/).join('').split(/\|/).join('')
-								    bot.sendMessage(chatId, `<b>Name - (username) : Score - [W/L]</b>\n${str}`,{parse_mode: 'html'})
+								    const msgRank = bot.sendMessage(chatId, `\ud83c\udfc6 <b>Ranking\nName - (username) : Score - [W/L]</b>\n\n${str}`,{parse_mode: 'html'})
+								   msgRank.then(msg => {
+								      bot.pinChatMessage(chatId, msg.message_id, {disable_notification: true})
+            })
         });
+
     }
     //Status Function - Not deployed yet
     /*
@@ -463,7 +474,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
         if (player.life <= 0) {
             match.value = 0
             console.log(`${player.name} FAINTED`)
-            bot.sendMessage(chatId, `${player.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>`, {parse_mode: 'HTML'})
+            bot.sendMessage(chatId, `${player.name} <b>FAINTED!</b>`, {parse_mode: 'HTML'})
             if (player.id === player1.id) {
                 bot.sendMessage(chatId, `Congratulations ${player2.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'})
                 loser.name = player1.name
@@ -541,7 +552,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
         if (player.life <= 0) {
             match.value = 0
             console.log(`${player.name} FAINTED`)
-            bot.sendMessage(chatId, `${itemDict[j]}\n${player.name} <b>FAINTED!</b>\n<pre>Tap Restart.</pre>`, {parse_mode: 'HTML'})
+            bot.sendMessage(chatId, `${itemDict[j]}\n${player.name} <b>FAINTED!</b>`, {parse_mode: 'HTML'})
             if (player.id === player1.id) {
                 bot.sendMessage(chatId, `Congratulations ${player2.name}, <b>YOU WIN!</b>`, {parse_mode: 'HTML'})
                 loser.name = player1.name
@@ -576,6 +587,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
     if (msg.text === welcome || msg.text === welcome2) {
         bot.sendMessage(chatId, `Hello,<b> ${msg.from.first_name}!</b>\nWelcome to PokeRand Game\nTap Roll a Dice to start`, mainKeyboard)}
     // Debug
+    let adminId = 318475027
     if(msg.text === '/debug' && msg.from.id === adminId){
         loser.name = 'Bert'
         loser.id = 318475027
@@ -584,16 +596,19 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
         player1.name = 'João'
         player1.username = undefined
         player1.id = 533923287
-        console.log(player1)
+        //console.log(player1)
         writeRank(player1, loser)
+        //restartGame()
     }
-				
-    let adminId = 318475027
+    //auto-restart
+    if(match.value === 0){
+        restartGame()
+    }
     if(msg.text === '/reset' && msg.from.id === adminId){ restartGame() }
     //Ranking
     const ranking = '\ud83c\udfc6 Ranking'
     if (msg.text === ranking) {
-        showRank();
+        showRank()
     }   
     //Roll a dice
     let dice = '\ud83c\udfb2 Roll a Dice'
