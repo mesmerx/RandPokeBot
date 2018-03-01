@@ -20,7 +20,8 @@ const itemDict = {
     3: ['You found a Hyper Potion and recovered 3 HP!'],
     4: ['You found a Flame Orb and lost 3 HP.'],
     5: ['You found a Quick Claw and can attack twice!'],
-    6: ['You found a X-Defense and it will reduce your damage taken in 2'],
+    6: ['You found X-Defense. Any damage you\'d take in next turn will be reduced by 2.'],
+    7: ['You found X-Attack. Any damage you\'d cause in next turn will be increased by 2.'],
 }
 
 const dictAttack = {

@@ -327,6 +327,26 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
                 x = 8
             }	
         }
+        //X-Atk rule
+        if (msg.from.id === player1.id && player2.xAtk === 1 && x !== 7) {
+            player.dano = player1.dano
+            if(x === 0) {
+                x = 2
+                player.dano = x
+            } else {
+                player.dano += 2     
+            }
+            player2.xAtk = undefined
+        } else if (msg.from.id === player2.id && player1.xAtk === 1 && x !== 7) {
+            player.dano = player2.dano
+            if(x === 0) {
+                x = 2
+                player.dano = x
+            } else {
+                player.dano += 2     
+            }
+            player1.xAtk = undefined
+        }
         player.life = player.life - player.dano
         if (player.life <= 0) {
             match.value = 0
@@ -350,6 +370,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
         } else {
             const dictDamage = dict.FuncDictDamage({x: player.dano})
             bot.sendMessage(chatId, dictDamage[x] + strings.damageMsg({player: player}), {parse_mode: 'HTML'})
+            console.log(player,x)
         }
     }
     const defFunc = (player,loser) => {
@@ -395,8 +416,13 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
                 player2.turnAtk++
                 player1.turnAtk--
             }
+            //X-Def Item
         } else if (j === 6) {
             player.xDef = 1
+            player.life += 0
+            //X-Atk Item
+        } else if (j === 7) {
+            player.xAtk = 1
             player.life += 0
         } else {
             player.life += j
@@ -431,12 +457,10 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
         if (player.life === undefined) {
             player.life = 10
         }
-        let j = IntRand(0, 7)
+        let j = IntRand(0, 8)
         msgItem(player, j,loser)
     }
     // Functions Declaration END //
-
-    //Damage array and Dict Damage
     //Welcome msg and Menu
     const welcome = '/start'
     const welcome2= '/start@Bertinnnbot'
