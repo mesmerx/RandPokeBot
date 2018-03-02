@@ -9,7 +9,7 @@
   "dependencies": {
     "mathjs": "^3.20.1",
     "node-telegram-bot-api": "^0.30.0",
-				"node-natural-sort": "^0.8.6"
+    "node-natural-sort": "^0.8.6"
   },
   "devDependencies": {
     "eslint": "^4.15.0",
