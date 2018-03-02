@@ -559,9 +559,6 @@ const main = ({token}) => {
     bot.on('message', msg => onMessage({msg, bot, match, player1, player2, loser}))
 }
 
-exports.main = main
-exports.checkPlayer = checkPlayer
-exports.Player = Player
-exports.rollDice = rollDice
-exports.onMessage = onMessage
-exports.randNth = randNth
+module.exports = {
+    main, checkPlayer, Player, rollDice, onMessage, randNth
+}
