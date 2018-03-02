@@ -150,7 +150,6 @@ const dictAttack = {
     122: ['Armaldo used Ancient Power']
 }
 
-exports.arrayDamage = arrayDamage
-exports.FuncDictDamage = FuncDictDamage
-exports.itemDict = itemDict
-exports.dictAttack = dictAttack
+module.exports = {
+    arrayDamage, FuncDictDamage, itemDict, dictAttack
+}

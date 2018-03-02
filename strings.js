@@ -11,7 +11,8 @@ const pWin = ({player}) => `Congratulations ${player.name}, <b>YOU WIN!</b>`
 const damageMsg = ({player}) => `\n${player.name} has ${player.life} HP!`
 const pWaitDef = ({player}) => `${player.name}, wait for your turn to defend!`
 const itemMsg = ({player}) => `\nYour HP is ${player.life}.`
-//function's strings ends
+const HornLeechMsg = ({player,recLvl}) => `${player.name} recovered ${recLvl} HP due to Horn Leech, and now has ${player.life} HP.`
+//function's strings end
 const welcome = ({msg}) => `Hello,<b> ${msg.from.first_name}!</b>\nWelcome to PokeRand Game\nTap Roll a Dice to start`
 const RollDiceInMatch = ({msg}) => `<b>Sorry, ${msg.from.first_name}!</b>\nYou cannot roll a dice while a match is in progress.`
 const PlayAloneMsg = ({msg}) => `${msg.from.first_name}, you cannot play alone. Please, call a friend to join the game!`
@@ -23,23 +24,8 @@ const pNoItemTurn = ({player}) => `${player.name}, you cannot use an item right 
 
 
 
-exports.p3Err = p3Err
-exports.rollDiceMatch = rollDiceMatch
-exports.pRollDice = pRollDice
-exports.RollDiceAgain = RollDiceAgain
-exports.SameRollDice = SameRollDice
-exports.pFst = pFst
-exports.restartGame = restartGame
-exports.pWaitAtk = pWaitAtk
-exports.pFainted = pFainted
-exports.pWin = pWin
-exports.damageMsg = damageMsg
-exports.pWaitDef = pWaitDef
-exports.itemMsg = itemMsg
-//function's strings ends
-exports.welcome = welcome
-exports.RollDiceInMatch = RollDiceInMatch
-exports.PlayAloneMsg = PlayAloneMsg
-exports.pNotInMatch = pNotInMatch
-exports.pNoItem = pNoItem
-exports.pNoItemTurn = pNoItemTurn
+module.exports = {
+    p3Err, rollDiceMatch, pRollDice, RollDiceAgain, SameRollDice, pFst, restartGame, pWaitAtk, pFainted, pWin, damageMsg, pWaitDef, itemMsg, HornLeechMsg,
+    //function's strings end
+    welcome, RollDiceInMatch, PlayAloneMsg, pNotInMatch, pNoItem, pNoItemTurn
+}

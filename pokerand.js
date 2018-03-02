@@ -13,7 +13,7 @@ const mainKeyboard = {
         ]
     }, parse_mode: 'HTML',
 }
-const IntRand = (x, y) => {
+const IntRand = ({x, y}) => {
     return math.randomInt(x, y)
 }
 // Recebe um array ou um mapa
@@ -54,25 +54,25 @@ const rollDice = ({match, player1, player2, bot, msg, writeRank}) => {
     let chatId = msg.chat.id   
     checkPlayer({player1, player2, bot, msg})
     if (player1.id === msg.from.id && player1.num === undefined) {
-        player1.num = IntRand(1, 20)
+        player1.num = IntRand({x: 1 ,y: 20})
         bot.sendMessage(chatId, strings.pRollDice({player: player1}), {parse_mode: 'HTML'})
         player1.life = 10
         player1.item = 1
         player1.turnAtk = 0
         player1.turnDef = 0
-        writeRank(player1)
+        writeRank({player: player1})
         console.log(`Player 1 = ${player1.name} , ID = ${player1.id} , Dice: ${player1.num}`)
     } else if (player1.id === msg.from.id) {
         bot.sendMessage(chatId, strings.RollDiceAgain({player: player1}))
     } else {
         if (player2.id === msg.from.id && player2.num === undefined) {
-            player2.num = IntRand(1, 20)
+            player2.num = IntRand({x: 1, y: 20})
             bot.sendMessage(chatId, strings.pRollDice({player: player2}), {parse_mode: 'HTML'})
             player2.life = 10
             player2.item = 1
             player2.turnAtk = 0
             player2.turnDef = 0
-            writeRank(player2)
+            writeRank({player: player2})
             console.log(`Player 2 = ${player2.name} , ID = ${player2.id} , Dice: ${player2.num}`)
         }
     }
@@ -127,9 +127,8 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
                     resolve(data);
             });
         })                                           
-    }
-                                                
-    const CheckRankChanges = (player, loser, arr) => {
+    }                                           
+    const CheckRankChanges = ({player, loser, arr}) => {
         //If player name || player username!=Ranking
         if(arr.toString().match(`\\|${player.name}\\|`) !== player.name || arr.toString().match(`${player.username}`) !== player.username){
             for(let i=0;i<arr.length;i++){
@@ -151,10 +150,11 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
             }
         }
     }
+
     //Rank Function 
-    const writeRank = (player, loser) => { 
+    const writeRank = ({player, loser}) => { 
         readFile({file: 'rank.txt'}).then(data => {
-            let arr = data.toString().split('\n')		
+            let arr = data.toString().split('\n')
             if(arr.toString().match(`\\(${player.id}\\)`)){
                 if(player.username === undefined){
                     player.username = 'NoUserName'}
@@ -162,7 +162,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
                     if(arr.toString().match(`\\(${loser.id}\\)`) && loser.username === undefined){ 
                         loser.username = 'NoUserName'
                     }
-                    CheckRankChanges(player,loser,arr)
+                    CheckRankChanges({player,loser,arr})
                     RegExp.escape = function(string) { return string.replace(/[-/\\^@!$*+?.()|[\]{}]/g, '\\$&')};
                     let userWin = new RegExp(`\\{\\d+\\} \\|${RegExp.escape(player.name)}\\| \\- ${RegExp.escape(player.username)} \\(\\d+\\) \\[\\d+\\/\\d+\\]`)
                     let userLose = new RegExp(`\\{\\d+\\} \\|${RegExp.escape(loser.name)}\\| \\- ${RegExp.escape(loser.username)} \\(\\d+\\) \\[\\d+\\/\\d+\\]`)															    								      
@@ -194,6 +194,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
             }
         });
     }
+				
     const showRank = () => {
         readFile({file: 'rank.txt'}).then(data => {
             let arr = data.toString().split('\n')
@@ -219,7 +220,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
                   l = l.toString().split('/').join('')
 																  let apv = parseInt(w) - parseInt(l)
 																  console.log(apv)
-																		*/
+																	*/	
                     str = `${str}${name}${userName} : <b>${score} - ${match}</b>\n`
                 }else if(i === 1){
                     name = `\ud83e\udd48 ${arr[1].match(regex)}`
@@ -254,11 +255,12 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
             })
         });
 
-    }
+    } 
     //Status Function - Not deployed yet
-    /*
-    const statusFunc = (player,i) => {
+    
+    const statusFunc = ({i}) => {
         //Sleep
+        /*
         if(i === 53){
 								  if(player.statAtk === undefined){
                 bot.sendMessage(chatId, `${player.name}, <b>Your Hypnosis has successful</b>, opponent will sleep by <b>two turns.</b>`, {parse_mode: 'html'})
@@ -269,8 +271,16 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
                 bot.sendMessage(chatId, `Sorry, ${player.name}. Your opponent is already sleeping\nYour attack failed.`)
             }
         }
+								*/
+        if(i === 85){
+            if(msg.from.id === player1.id){
+                player1.RecHp = 'Horn Leech'
+            } else {
+                player2.RecHp = 'Horn Leech'
+            }
+        }
     }
-				*/
+				
     //Attack Function
     const randAttack = () => {
         readFile({file: 'fileId.txt'}).then(data => {
@@ -279,26 +289,26 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
             let randLine = lines[math.floor(math.random() * max)]
             let i = lines.indexOf(randLine)
             bot.sendDocument(chatId, randLine,{caption: `${dict.dictAttack[i]}`})
-            //statusFunc(player,i)
+            statusFunc({i})
         })
     }
-    const checkAtkTurn = (player1, player2) => {
+    const checkAtkTurn = ({player1, player2}) => {
         if (msg.from.id === player1.id && player1.turnAtk >= 1) {
             player1.turnAtk--
             player2.turnDef++
-            randAttack(player1)
+            randAttack()
         } else if (msg.from.id === player1.id && player1.turnAtk <= 0) {
             bot.sendMessage(chatId, strings.pWaitAtk({player: player1}))
         } else if (msg.from.id === player2.id && player2.turnAtk >= 1) {
             player2.turnAtk--
             player1.turnDef++
-            randAttack(player2)
+            randAttack()
         } else if (msg.from.id === player2.id && player2.turnAtk <= 0) {
             bot.sendMessage(chatId, strings.pWaitAtk({player: player2}))
         }
     }
     //Def Function
-    const msgDef = (player, x,loser) => {
+    const msgDef = ({player, x,loser}) => {
         if (x === 5) {//FLINCH
             player.dano = 1		
             if (msg.from.id === player1.id) {
@@ -320,34 +330,81 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
         } else {
             player.dano = x
         }
-        if (player.xDef === 1 && x !== 7){
-            player.dano -= 2
-            player.xDef = undefined
-            if(player.dano <= 0){
-                x = 8
-            }	
-        }
         //X-Atk rule
-        if (msg.from.id === player1.id && player2.xAtk === 1 && x !== 7) {
-            player.dano = player1.dano
-            if(x === 0) {
-                x = 2
-                player.dano = x
-            } else {
+        if (msg.from.id === player1.id && player2.xAtk === 1) {
+            if(x === 0 || x === 7){
+                player2.xAtk = undefined
+            }else{
+                player.dano = player1.dano
                 player.dano += 2     
+                player2.xAtk = undefined
             }
-            player2.xAtk = undefined
-        } else if (msg.from.id === player2.id && player1.xAtk === 1 && x !== 7) {
-            player.dano = player2.dano
-            if(x === 0) {
-                x = 2
-                player.dano = x
+        } else if (msg.from.id === player2.id && player1.xAtk === 1) {
+            if(x === 0 || x === 7 || x === 8){
+                player1.xAtk = undefined
             } else {
+                player.dano = player2.dano
                 player.dano += 2     
+                player1.xAtk = undefined
             }
-            player1.xAtk = undefined
         }
-        player.life = player.life - player.dano
+        
+        //Horn Leech rule
+        if(msg.from.id === player1.id && player2.RecHp === 'Horn Leech'){
+            let recLvl
+            if(x === 0 || x === 7){
+                player2.RecHp = undefined
+                recLvl = 0
+            } else {
+                player1.dano = player.dano
+                recLvl = parseInt(player1.dano / 2)
+                if(recLvl === 0){
+                    recLvl = 1
+                }
+                player2.life += recLvl
+                if(player2.life > 10){
+                    player2.life = 10
+                }
+                player2.RecHp = undefined
+            }
+            setTimeout(function (){
+                bot.sendMessage(chatId, strings.HornLeechMsg({player: player2, recLvl}))
+            },1000)
+        } else if (msg.from.id === player2.id && player1.RecHp === 'Horn Leech') {
+            let recLvl
+            if(x === 0 || x === 7){
+                player1.RecHp = undefined
+                recLvl = 0
+            } else {
+                player2.dano = player.dano
+                recLvl = parseInt(player2.dano / 2)          
+                if(recLvl === 0){
+                    recLvl = 1
+                }
+                player1.life += recLvl
+                if(player1.life > 10){
+                    player1.life = 10
+                } 
+                player1.RecHp = undefined
+            }
+            setTimeout(function (){
+                bot.sendMessage(chatId, strings.HornLeechMsg({player: player1, recLvl}))
+            },1000)
+        }
+        //X-Def rule
+        if (player.xDef === 1){
+            if(x === 0 || x === 7){
+                player.xDef = undefined
+            } else {
+                player.dano -= 2
+                player.xDef = undefined
+                if(player.dano <= 0){
+                    x = 8
+                    player.dano = 0
+                }	
+            }
+        }
+        player.life -= player.dano
         if (player.life <= 0) {
             match.value = 0
             console.log(`${player.name} FAINTED`)
@@ -357,14 +414,14 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
                 loser.name = player1.name
                 loser.id = player1.id
                 loser.username = player1.username
-                writeRank(player2,loser)
+                writeRank({player: player2,loser})
                 autoRestart()           
             } else {
                 bot.sendMessage(chatId, strings.pWin({player: player1}), {parse_mode: 'HTML'}) 
                 loser.name = player2.name
                 loser.id = player2.id
                 loser.username = player2.username
-                writeRank(player1,loser)
+                writeRank({player: player1,loser})
                 autoRestart()
             }
         } else {
@@ -373,27 +430,27 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
             console.log(player,x)
         }
     }
-    const defFunc = (player,loser) => {
-        const n = IntRand(0, 37)
+    const defFunc = ({player,loser}) => {
+        const n = IntRand({x: 0, y: 37})
         let x = dict.arrayDamage[n]
         if (player.life === undefined) {
             player.life = 10
         }
-        msgDef(player, x,loser)
+        msgDef({player, x,loser})
     }
 
-    const checkDefTurn = (player1,player2,loser) => {
+    const checkDefTurn = ({player1,player2,loser}) => {
         if (msg.from.id === player1.id && player1.turnDef >= 1) {
             player1.turnDef--
             player1.turnAtk++
-            defFunc(player1,loser)
+            defFunc({player: player1,loser})
             console.log(`Player 1: ${player1.name} executou Defend. HP atual: ${player1.life}`)
         } else if (msg.from.id === player1.id && player1.turnDef <= 0) {
             bot.sendMessage(chatId, strings.pWaitDef({player: player1}))
         } else if (msg.from.id === player2.id && player2.turnDef >= 1) {
             player2.turnDef--
             player2.turnAtk++
-            defFunc(player2,loser)
+            defFunc({player: player2,loser})
             console.log(`Player 2: ${player2.name} executou Defend. HP atual: ${player2.life}`)
         } else if (msg.from.id === player2.id && player2.turnDef <= 0) {
             bot.sendMessage(chatId, strings.pWaitDef({player: player2}))
@@ -401,7 +458,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
     }
 
     //Item Function
-    const msgItem = (player, j,loser) => {
+    const msgItem = ({player, j,loser}) => {
         if (j === 4) {
             player.life -= 3
         }
@@ -438,27 +495,27 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
                 loser.name = player1.name
                 loser.id = player1.id
                 loser.username = player1.username
-                writeRank(player2,loser)
+                writeRank({player2,loser})
                 autoRestart()
             } else {
                 bot.sendMessage(chatId, strings.pWin({player: player1}), {parse_mode: 'HTML'})  
                 loser.name = player2.name
                 loser.id = player2.id
                 loser.username = player2.username
-                writeRank(player1,loser)
+                writeRank({player1,loser})
                 autoRestart()
             }
         } else {
             bot.sendMessage(chatId, dict.itemDict[j] + strings.itemMsg({player: player}), {parse_mode: 'HTML'})
         }
     }
-    const itemFunc = (player,loser) => {
+    const itemFunc = ({player,loser}) => {
         player.item -= 1
         if (player.life === undefined) {
             player.life = 10
         }
-        let j = IntRand(0, 8)
-        msgItem(player, j,loser)
+        let j = IntRand({x: 0, y: 8})
+        msgItem({player, j,loser})
     }
     // Functions Declaration END //
     //Welcome msg and Menu
@@ -469,21 +526,26 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
     // Debug
     let adminId = 318475027
     if(msg.text === '/debug' && msg.from.id === adminId){
-        loser.name = 'Bert'
-        loser.id = 318475027
-        loser.username = 'Bertinnn'
-        player1.life = 2
+        player2.name = 'Bert'
+        player2.id = 318475027
+        player2.xDef = 1
+        player2.life = 10
         player1.name = 'João'
         player1.username = undefined
         player1.id = 533923287
+        player1.xAtk = 1
+        player1.RecHp = 'Horn Leech'
+        player1.life = 10
+        msg.from.id = player2.id
+        player2.turnDef = 1
         //console.log(player1)
-        writeRank(player1, loser)
+        checkDefTurn({player1, player2})
         //restartGame()
-    }
+    } 
     //Admin reset
     if(msg.text === '/reset' && msg.from.id === adminId){ 
         restartGame()
-    }
+    } 
     //Roll a dice
     let dice = '\ud83c\udfb2 Roll a Dice'
     if (msg.text === dice) {
@@ -492,7 +554,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
         } else {
             rollDice({player1, player2, match, msg, bot, writeRank})
         }
-    }
+    } 
     //Attack
     const atk = '\u2694 Attack'
     if (msg.text === atk) {
@@ -501,7 +563,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
         } else if (msg.from.id !== player1.id && msg.from.id !== player2.id) {
             bot.sendMessage(chatId, strings.pNotInMatch({msg}))
         } else {
-            checkAtkTurn(player1,player2)
+            checkAtkTurn({player1,player2})
         }
     }
     //Defend
@@ -512,7 +574,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
         } else if (msg.from.id !== player1.id && msg.from.id !== player2.id) {
             bot.sendMessage(chatId, strings.pNotInMatch({msg}))
         } else {
-            checkDefTurn(player1, player2,loser)
+            checkDefTurn({player1, player2,loser})
         }
     }
     //Use an Item
@@ -525,7 +587,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
         } else {
             if (msg.from.id === player1.id && player1.turnAtk >= 1) {
                 if (player1.item === 1) {
-                    itemFunc(player1,loser)
+                    itemFunc({player: player1,loser})
                     console.log('Player 1 usou item')
                 } else {
                     bot.sendMessage(chatId, strings.pNoItem({player: player1}))
@@ -535,7 +597,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
             }
             if (msg.from.id === player2.id && player2.turnAtk >= 1) {
                 if (player2.item === 1) {
-                    itemFunc(player2,loser)
+                    itemFunc({player: player2,loser})
                     console.log('Player 2 usou item')
                 } else {
                     bot.sendMessage(chatId, strings.pNoItem({player: player2})) 
@@ -547,7 +609,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
     }
 
 
-}
+} 
 const Player = {}
 //MAIN FUNCTION - START
 const main = ({token}) => {
