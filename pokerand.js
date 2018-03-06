@@ -297,12 +297,14 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
             player1.turnAtk--
             player2.turnDef++
             randAttack()
+            console.log(`Player ${player1.p}: ${player1.name} atacou:`); console.log(player1)
         } else if (msg.from.id === player1.id && player1.turnAtk <= 0) {
             bot.sendMessage(chatId, strings.pWaitAtk({player: player1}))
         } else if (msg.from.id === player2.id && player2.turnAtk >= 1) {
             player2.turnAtk--
             player1.turnDef++
             randAttack()
+            console.log(`Player ${player2.p}: ${player2.name} atacou: `); console.log(player2)
         } else if (msg.from.id === player2.id && player2.turnAtk <= 0) {
             bot.sendMessage(chatId, strings.pWaitAtk({player: player2}))
         }
@@ -427,7 +429,7 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
         } else {
             const dictDamage = dict.FuncDictDamage({x: player.dano})
             bot.sendMessage(chatId, dictDamage[x] + strings.damageMsg({player: player}), {parse_mode: 'HTML'})
-            console.log(player,x)
+            console.log(`Player ${player.p}: ${player.name} defendeu. X = ${x}:`); console.log(player)
         }
     }
     const defFunc = ({player,loser}) => {
@@ -495,14 +497,14 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
                 loser.name = player1.name
                 loser.id = player1.id
                 loser.username = player1.username
-                writeRank({player2,loser})
+                writeRank({player: player2,loser})
                 autoRestart()
             } else {
                 bot.sendMessage(chatId, strings.pWin({player: player1}), {parse_mode: 'HTML'})  
                 loser.name = player2.name
                 loser.id = player2.id
                 loser.username = player2.username
-                writeRank({player1,loser})
+                writeRank({player: player1,loser})
                 autoRestart()
             }
         } else {
@@ -533,10 +535,11 @@ const onMessage = ({msg, bot, match, player1, player2, loser}) => {
         player1.name = 'João'
         player1.username = undefined
         player1.id = 533923287
-        player1.xAtk = 1
-        player1.RecHp = 'Horn Leech'
+        //player1.xAtk = 1
+        //player1.RecHp = 'Horn Leech'
         player1.life = 10
         msg.from.id = player2.id
+        player2.turnAtk = 0
         player2.turnDef = 1
         //console.log(player1)
         checkDefTurn({player1, player2})
