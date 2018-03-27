@@ -1,5 +1,5 @@
 const bot = require('./newapi.js')
-const token = '458733904:AAH-Fq8ABp5xVpLHf32uxKAbP-nMCLf4mgU'
+const token = ''
 
 const call = new bot();
 call.connect(token)
